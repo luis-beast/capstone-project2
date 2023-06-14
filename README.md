@@ -7,3 +7,5 @@ We wish to solve this by creating a Wiki for service members to create and updat
 Link to all documentation:
 
 https://docs.google.com/document/d/16yZcNkG6rQMvAU6msef3SPJ4QjwXdykjIzYGnh2JpZo/edit?usp=sharing
+
+![Screenshot](/Backend/db_schema_screenshot.png)
