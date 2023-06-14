@@ -3,3 +3,7 @@ Information and job knowledge across the Air Force (AF) is very siloed, which ma
 
 # Solution
 We wish to solve this by creating a Wiki for service members to create and update information about their own jobs and interactions with the Air Force. These can include topics ranging from basic job knowledge to a given Air Force Instruction (AFI) to unclassified information about a weapon system. In addtion, specially marked pages on upcoming capabilities and projected projects will be available. Each Wiki page will have an associated forum thread in which users can then discuss information on the page.
+
+Link to all documentation:
+
+https://docs.google.com/document/d/16yZcNkG6rQMvAU6msef3SPJ4QjwXdykjIzYGnh2JpZo/edit?usp=sharing
