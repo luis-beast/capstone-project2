@@ -3,8 +3,10 @@
  * @returns { Promise<void> }
  */
 exports.up = function (knex) {
-  return knex.schema.createTable("tags", (table) => {
+  return knex.schema.createTable("forum_threads", (table) => {
     table.increments("id");
+    table.integer("page_id");
+    table.foreign("page_id").references("pages.id");
     table.string("name");
     table.timestamp(true, true);
   });
@@ -14,6 +16,4 @@ exports.up = function (knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function (knex) {
-  return knex.schema.dropTableIfExists("tags");
-};
+exports.down = function (knex) {};

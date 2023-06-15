@@ -7,6 +7,7 @@ const Home = () => {
   return (
     <>
       <div className="home">
+        <h1>WikiForces</h1>
         <img src={logo} alt="eagle" />
         <Search />
       </div>

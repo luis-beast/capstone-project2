@@ -1,8 +1,24 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+describe("Homepage tests", () => {
+  test("renders search bar", () => {
+    render(<Home />);
+    const searchbar = screen.getByPlaceholderText(/search/i);
+    expect(searchbar).toBeInTheDocument();
+  });
+});
+
+describe("Wiki Page Tests", () => {
+  test("renders wiki page", () => {
+    render(<WikiPage />);
+    const article = screen.getByRole("article");
+    expect(article).toBeInTheDocument();
+  });
+
+  test("renders edit button", () => {
+    render(<WikiPage />);
+    const button = Screen.getByText(/edit/i);
+    expect(button).toBeInTheDocument();
+  });
 });
