@@ -8,4 +8,4 @@ Link to all documentation:
 
 https://docs.google.com/document/d/16yZcNkG6rQMvAU6msef3SPJ4QjwXdykjIzYGnh2JpZo/edit?usp=sharing
 
-![Screenshot](/Backend/db_schema_screenshot.png)
+![Screenshot](/Backend/docs/db_schema_screenshot.png)
