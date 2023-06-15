@@ -29,8 +29,6 @@
 ### /pages?search=example (get)
     - returns list of pages where title/body contains "example"
 
-⬆️{search bar dropdown to specify if you're searching for a title or tag}⬇️
-
 ### /pages?tag=example (get)
     - returns all pages that have a tag of "example"
 
