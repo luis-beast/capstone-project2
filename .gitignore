@@ -1,3 +1,5 @@
 Backend/node_modules
 frontend/node_modules
 Backend/.env
+Backend/generate_reply_ids.js
+Backend/db_setup.sh
