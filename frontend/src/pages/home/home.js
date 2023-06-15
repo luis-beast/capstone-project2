@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import Search from "../../components/search/search";
 import logo from "./image.png";
+import "./home.css";
 
 const Home = () => {
   return (
