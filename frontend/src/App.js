@@ -9,11 +9,12 @@ import {
   TagList,
   WikiPage,
 } from "./pages";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
     <div className="App">
-      <h1>Capstone Project</h1>
+      <h1>WikiForces</h1>
       <Home />
     </div>
   );

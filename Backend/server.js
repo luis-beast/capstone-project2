@@ -9,6 +9,6 @@ server.use(express.json());
 
 //Do not call server.listen() in this file, see index.js
 
-server.get("/", (req, res) => {
+server.get("/users", (req, res) => {
   res.status(200);
 });
