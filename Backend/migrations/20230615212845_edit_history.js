@@ -5,13 +5,13 @@
 exports.up = function (knex) {
   return knex.schema.createTable("edit_history", (table) => {
     table.increments("id");
-    table.string("user_id");
+    table.integer("user_id");
     table.foreign("user_id").references("users.id");
-    table.string("page_id");
+    table.integer("page_id");
     table.foreign("page_id").references("pages.id");
-    table.string("body");
+    table.text("body");
     table.string("comment");
-    table.timestamp(true, true);
+    table.timestamps();
   });
 };
 
@@ -31,4 +31,3 @@ exports.down = function (knex) {
       return knex.schema.dropTableIfExists("edit_history");
     });
 };
-dsfg;

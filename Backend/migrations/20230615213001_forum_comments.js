@@ -5,13 +5,13 @@
 exports.up = function (knex) {
   return knex.schema.createTable("forum_comments", (table) => {
     table.increments("id");
-    table.string("user_id");
+    table.integer("user_id");
     table.foreign("user_id").references("users.id");
-    table.string("forum_id");
+    table.integer("forum_id");
     table.foreign("forum_id").references("forum_threads.id");
     table.string("replies_to");
     table.string("body");
-    table.timestamp(true, true);
+    table.timestamps();
   });
 };
 

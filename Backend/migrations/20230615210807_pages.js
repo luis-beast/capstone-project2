@@ -6,8 +6,8 @@ exports.up = function (knex) {
   return knex.schema.createTable("pages", (table) => {
     table.increments("id");
     table.string("title");
-    table.string("body");
-    table.timestamp(true, true);
+    table.text("body");
+    table.timestamps();
   });
 };
 

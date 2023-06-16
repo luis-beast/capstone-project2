@@ -10,7 +10,7 @@ exports.up = function (knex) {
     table.string("last_name");
     table.boolean("is_admin");
     table.string("password_hash");
-    table.timestamp(true, true);
+    table.timestamps();
   });
 };
 

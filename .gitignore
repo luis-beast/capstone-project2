@@ -1,6 +1,6 @@
-backend/node_modules
+Backend/node_modules
 frontend/node_modules
-backend/.env
-backend/generate_reply_ids.js
-backend/db_setup.sh
+Backend/.env
+Backend/generate_reply_ids.js
+Backend/db_setup.sh
 .git
