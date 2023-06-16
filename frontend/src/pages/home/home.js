@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import Search from "../../components/search/search";
+import { Search } from "../../components/index";
 import logo from "./image.png";
 import "./home.css";
 

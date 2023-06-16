@@ -3,12 +3,14 @@
  * @returns { Promise<void> }
  */
 exports.up = function (knex) {
-  table.increments("id");
-  table.integer("tag_id");
-  table.foreign("tag_id").references("tags.id");
-  table.integer("page_id");
-  table.foreign("page_id").references("pages.id");
-  table.timestamp(true, true);
+  return knex.schema.createTable("page_tags", (table) => {
+    table.increments("id");
+    table.integer("tag_id");
+    table.foreign("tag_id").references("tags.id");
+    table.integer("page_id");
+    table.foreign("page_id").references("pages.id");
+    table.timestamp(true, true);
+  });
 };
 
 /**
