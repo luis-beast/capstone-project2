@@ -1,16 +1,16 @@
 # API Endpoints Documentation
 
-### /login (post)
+### /login (post) (started, not complete)
 - returns error message if login fails 
 - returns user information upon successful login
 
 ### /register (get, post)
     - post to create a new user. Returns error message if username/email already exists
 
-### /users/ (get, post)
+### /users/ (get, post) ✅
     - admin can see list of users
 
-### /users/:id (get, del, put)
+### /users/:id (get, del, put) ✅
     - admin can modify user information
 
 ### /users/:id/history (get)
@@ -19,10 +19,10 @@
 ### /pages (get, post)
     - should return a list of all pages
 
-### /pages (get)
+### /pages (get)  ✅
     - returns pages and corresponding tag
 
-### /pages/:id (get, put, del)
+### /pages/:id (get, put, del) ✅
     - get includes all the tags a page uses
     - specific page
 
@@ -36,13 +36,13 @@
     - returns all pages that have either the tag or the text "example"
     - if inclusive is false, it returns all pages that have both the tag and the text "example"
 
-### /tags (get, post)
+### /tags (get, post) ✅
     - get lists all the tags
 
 ### /tags?search=example (get)
     - retuns a list of tages with text of "example"
 
-### /tags/:id (get, put, del)
+### /tags/:id (get, put, del) ✅
     - get, update, or delete a specific tag
 
 ### /pages/:id/history

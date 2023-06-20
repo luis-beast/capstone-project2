@@ -1,4 +1,6 @@
 import "./App.css";
+import { useState } from "react";
+import LoggedInContext from "./LoggedInContext";
 import {
   Home,
   EditHistory,
@@ -8,17 +10,24 @@ import {
   Register,
   TagList,
   WikiPage,
+  SearchWiki,
 } from "./pages";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
+  const [loggedIn, setLoggedin] = useState(false);
+
   return (
     <div className="App">
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </Router>
+      <LoggedInContext.Provider value={loggedIn}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/page/:id" element={<WikiPage />} />
+            <Route path="/search" element={<SearchWiki />} />
+          </Routes>
+        </Router>
+      </LoggedInContext.Provider>
     </div>
   );
 }

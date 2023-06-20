@@ -11,7 +11,7 @@ exports.up = function (knex) {
     table.foreign("page_id").references("pages.id");
     table.text("body");
     table.string("comment");
-    table.timestamps(rue, true);
+    table.timestamps(true, true);
   });
 };
 

@@ -6,3 +6,4 @@ export { default as Home } from "./home/home.js";
 export { default as Forum } from "./forum/forum.js";
 export { default as EditWiki } from "./EditWiki/EditWiki.js";
 export { default as EditHistory } from "./EditHistory/EditHistory.js";
+export { default as SearchWiki } from "./SearchWiki/SearchWiki.js";

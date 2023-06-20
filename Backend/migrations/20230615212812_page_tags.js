@@ -9,7 +9,7 @@ exports.up = function (knex) {
     table.foreign("tag_id").references("tags.id");
     table.integer("page_id");
     table.foreign("page_id").references("pages.id");
-    table.timestamps();
+    table.timestamps(true, true);
   });
 };
 

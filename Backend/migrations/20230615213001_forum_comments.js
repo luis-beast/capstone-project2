@@ -11,7 +11,7 @@ exports.up = function (knex) {
     table.foreign("forum_id").references("forum_threads.id");
     table.string("replies_to");
     table.string("body");
-    table.timestamps();
+    table.timestamps(true, true);
   });
 };
 
