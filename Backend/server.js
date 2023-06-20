@@ -16,7 +16,7 @@ server.get("/", (req, res) => {
   res.status(200).send("Application up and running. You better go catch it!");
 });
 
-//Users
+//users
 server.get("/users", (req, res) => {
   knex("users")
     .then((data) => res.status(200).json(data))
@@ -89,8 +89,34 @@ server.put("/users/:id", (req, res) => {
 
 //Gets pages
 server.get("/pages", (req, res) => {
-  knex("pages")
-    .then((data) => res.status(200).json(data))
+  knex("pages AS p")
+    .select(
+      "p.id",
+      "p.title",
+      "p.body",
+      knex.raw("array_agg(t.id) as tag_ids"),
+      knex.raw("array_agg(t.name) as tag_names")
+    )
+    .leftJoin("page_tags AS pt", "p.id", "pt.page_id")
+    .leftJoin("tags AS t", "pt.tag_id", "t.id")
+    .groupBy("p.id")
+    .then((data) => {
+      const sendData = data.map((page) => {
+        let tagArray = page.tag_ids
+          .filter((id) => id !== null)
+          .map((id, index) => ({
+            id: id,
+            name: page.tag_names[index],
+          }));
+        return {
+          id: page.id,
+          title: page.title,
+          body: page.body,
+          tags: tagArray,
+        };
+      });
+      res.status(200).json(sendData);
+    })
     .catch((err) => {
       console.error(err);
       res
@@ -100,6 +126,7 @@ server.get("/pages", (req, res) => {
 });
 
 // Post pages
+// TODO - parse and insert tag data
 server.post("/pages", (req, res) => {
   const input = req.body;
 
@@ -113,34 +140,91 @@ server.post("/pages", (req, res) => {
 
 // Gets page by ID
 server.get("/pages/:id", (req, res) => {
-  knex("pages")
-    .where("id", req.params.id)
-    .then((data) => res.status(200).json(data))
+  knex("pages AS p")
+    .select(
+      "p.id",
+      "p.title",
+      "p.body",
+      knex.raw("array_agg(t.id) as tag_ids"),
+      knex.raw("array_agg(t.name) as tag_names")
+    )
+    .leftJoin("page_tags AS pt", "p.id", "pt.page_id")
+    .leftJoin("tags AS t", "pt.tag_id", "t.id")
+    .where("p.id", req.params.id)
+    .groupBy("p.id")
+    .then((data) => {
+      const sendData = data.map((page) => {
+        let tagArray = page.tag_ids
+          .filter((id) => id !== null)
+          .map((id, index) => ({
+            id: id,
+            name: page.tag_names[index],
+          }));
+        return {
+          id: page.id,
+          title: page.title,
+          body: page.body,
+          tags: tagArray,
+        };
+      });
+      res.status(200).json(sendData);
+    })
     .catch((err) => {
       console.error(err);
       res.status(404).json({ Error: `No such page with id ${req.params.id}` });
     });
 });
 
+// Updates page
+server.put("/pages/:id", (req, res) => {
+  knex("pages")
+    .where("id", req.params.id)
+    .update(req.body)
+    .then(() => res.status(201).json({ message: "Your event was updated." }))
+    .catch((err) => {
+      console.error(err);
+      res
+        .status(500)
+        .json({ message: "There was an error updating this event!" });
+    });
+});
+
 // Deletes page
-server.delete("/pages/id", (req, res) => {
+server.delete("/pages/:id", (req, res) => {
   knex("pages")
     .where("id", req.params.id)
     .del()
     .then((data) => res.status(200).json(data))
     .catch((err) => {
+      console.error(err);
       res.status(202).json({
         Error: `Unable to delete event: ${req.params.id}. Error: ${err}`,
       });
     });
 });
 
-// TODO still
+// Gets the history of a page
+server.get("/pages/:id/history", (req, res) => {
+  knex("edit_history")
+    .where("page_id", req.params.id)
+    .then((data) => res.status(200).json(data))
+    .catch((err) => {
+      console.error(err);
+      res
+        .status(404)
+        .json({
+          message: `Page ${req.params.id} does not have a history. Error: ${err}`,
+        });
+    });
+});
+
+// TODO
+// still
 server.post("/login", async (req, res) => {
   const { email } = req.body;
   const user = await knex
-    .from("users")
-    .select("users.id", "users.email")
+    .from("forum_threads")
+    .select("forum_threads.id", "forum_threads.email")
     .where("email", email)
     .then((data) => {
       // chekck to see if the response is one.
@@ -161,7 +245,7 @@ server.get("/tags", (req, res) => {
     .then((data) => res.status(200).json(data))
     .catch((err) => {
       console.error(err);
-      res.status(404).json({ Error: `There was an error adding ${body}` });
+      res.status(404).json({ Error: `There was an error retrieving tags` });
     });
 });
 
@@ -172,6 +256,9 @@ server.get("/tags", (req, res) => {
   knex("tags").then((data) => {
     data.filter((tag) => {
       if (tag.name === req.query.name) {
+        console.log("tag.name: ", tag.name);
+        console.log(req.query.name);
+        console.log("adding to tags response array");
         response.push(tag);
       }
     });
@@ -244,6 +331,78 @@ server.delete("/tags/:id", (req, res) => {
     .catch((err) => {
       res.status(500).json({
         message: `Cannot be deleted right now, try again later. Error: ${err}`,
+      });
+    });
+});
+// Forum_threads
+server.get("/forum", (req, res) => {
+  knex("forum_threads")
+    .then((data) => res.status(200).json(data))
+    .catch((err) => {
+      console.error(err);
+      res.status(404).json({
+        Error:
+          "The forums cannot be retrieved right now. Please try again later.",
+      });
+    });
+});
+
+server.post("/forum", (req, res) => {
+  const body = req.body;
+  knex("forum_threads")
+    .insert(body)
+    .then(() =>
+      res
+        .status(201)
+        .json({ message: `You've successfully added ${body.name}` })
+    )
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        message: `Forum cannot be added right now. Please try again later. Error: ${err}`,
+      });
+    });
+});
+server.get("/forum/:id", (req, res) => {
+  const input = req.params.id;
+  knex("forum_threads")
+    .where("id", input)
+    .then((data) => {
+      if (data.length > 0) {
+        res.status(200).json(data);
+      } else {
+        res.status(404).json({ message: `Forum not found at id: ${input}.` });
+      }
+    });
+});
+server.delete("/forum/:id", (req, res) => {
+  const body = req.body;
+  const queryValue = req.params.id;
+  knex("forum_threads")
+    .where("id", queryValue)
+    .del()
+    .then(() => {
+      res.status(200).json({ message: `${queryValue} has been deleted.` });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: `Unable to delete ${queryValue}, please try again later. Error: ${err}`,
+      });
+    });
+});
+
+server.put("/forum/:id", (req, res) => {
+  const { page_id, name } = req.body;
+  let queryValue = req.params.id;
+  knex("forum_threads")
+    .where("id", queryValue)
+    .update({ page_id, name })
+    .then(() => res.status(201).json({ message: "You've updated the forum." }))
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        message:
+          "There was an error updating the forum, please try again later.",
       });
     });
 });

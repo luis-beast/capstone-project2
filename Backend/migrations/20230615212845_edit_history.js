@@ -6,9 +6,17 @@ exports.up = function (knex) {
   return knex.schema.createTable("edit_history", (table) => {
     table.increments("id");
     table.integer("user_id");
-    table.foreign("user_id").references("users.id");
+    table
+      .foreign("user_id")
+      .references("users.id")
+      .onUpdate("CASCADE")
+      .onDelete("SET NULL");
     table.integer("page_id");
-    table.foreign("page_id").references("pages.id");
+    table
+      .foreign("page_id")
+      .references("pages.id")
+      .onUpdate("CASCADE")
+      .onDelete("CASCADE");
     table.text("body");
     table.string("comment");
     table.timestamps(true, true);

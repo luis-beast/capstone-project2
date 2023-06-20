@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import LoggedInContext from "../../LoggedInContext";
 
 const WikiPage = () => {
@@ -8,16 +8,22 @@ const WikiPage = () => {
   const [loading, setLoading] = useState(true);
   const loggedIn = useContext(LoggedInContext);
 
+  const { state } = useLocation();
+
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:8080/pages/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setPage(data[0]);
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
-  }, [id]);
+    if (state?.page) {
+      setPage(state.page);
+    } else {
+      fetch(`http://localhost:8080/pages/${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setPage(data[0]);
+        })
+        .catch((err) => console.log(err))
+        .finally(() => setLoading(false));
+    }
+  }, [id, state]);
 
   return (
     <div className="wiki-page">

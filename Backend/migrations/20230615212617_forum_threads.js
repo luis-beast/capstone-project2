@@ -6,7 +6,11 @@ exports.up = function (knex) {
   return knex.schema.createTable("forum_threads", (table) => {
     table.increments("id");
     table.integer("page_id");
-    table.foreign("page_id").references("pages.id");
+    table
+      .foreign("page_id")
+      .references("pages.id")
+      .onUpdate("CASCADE")
+      .onDelete("SET NULL");
     table.string("name");
     table.timestamps(true, true);
   });

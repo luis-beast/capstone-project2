@@ -25,6 +25,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/page/:id" element={<WikiPage />} />
             <Route path="/search" element={<SearchWiki />} />
+            <Route path="/tags" element={<TagList />} />
+            <Route path="/forum" element={<Forum />} />
           </Routes>
         </Router>
       </LoggedInContext.Provider>

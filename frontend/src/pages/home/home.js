@@ -1,7 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import { Search } from "../../components/index";
-import logo from "./image.png";
 import "./home.css";
 
 const Home = () => {
@@ -9,7 +8,7 @@ const Home = () => {
     <>
       <div className="home">
         <h1>WikiForces</h1>
-        <img src={logo} alt="eagle" />
+        <img src="/image.png" alt="eagle" />
         <Search />
       </div>
     </>

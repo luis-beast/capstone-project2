@@ -16,46 +16,43 @@
 ### /users/:id/history (get)
     - gets all of a particular users modifications to a page along with their information
 
-### /pages (get, post)
-    - should return a list of all pages
-
-### /pages (get)  ✅
-    - returns pages and corresponding tag
+### /pages (get, post) 
+    - should return a list of all pages and their corresponding tags
 
 ### /pages/:id (get, put, del) ✅
     - get includes all the tags a page uses
     - specific page
 
-### /pages?search=example (get)
+### /pages/:id/history (Luis was here)
+    - returns the edit history for a page including information of the user that edited a particular page
+
+### /pages/:page_id/history/:edit_id (Luis was here)
+    - returns specific version of a particular page
+
+### /pages?search=example (get)   (This is currrently being done in the front end.)
     - returns list of pages where title/body contains "example"
 
-### /pages?tag=example (get)
+### /pages?tag=example (get)      (This is currently being done in the front end.)
     - returns all pages that have a tag of "example"
 
-### /pages?tag=example&search=example&inclusive=true
+### /pages?tag=example&search=example&inclusive=true    (This is currently being done in the front end.)
     - returns all pages that have either the tag or the text "example"
     - if inclusive is false, it returns all pages that have both the tag and the text "example"
 
 ### /tags (get, post) ✅
     - get lists all the tags
 
-### /tags?search=example (get)
+### /tags?search=example (get)   (This is currently being done in the front end.)
     - retuns a list of tages with text of "example"
 
 ### /tags/:id (get, put, del) ✅
     - get, update, or delete a specific tag
 
-### /pages/:id/history
-    - returns the edit history for a page including information of the user that edited a particular page
-
-### /pages/:page_id/history/:edit_id
-    - returns specific version of a particular page
-
-### /Forum (get, post)
+### /Forum (get, post) ✅
     - returns a list of all Forum threads
     - post creates a new forum thread
 
-### /Forum/:id (get, post, put, del)
+### /Forum/:id (get, post, put, del) ✅
     - full CRUD on a specific forum
     - get returns the comments with the users information
     - post creates a new comment

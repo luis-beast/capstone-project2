@@ -1,7 +1,38 @@
 import React, { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
+import "./navbar.css";
 
 const Navbar = () => {
-  return <></>;
+  return (
+    <div className="NavbarContainer">
+      {/* <div className="NavbarLogo">
+        <img
+          src="/image.png"
+          alt="WikiForces"
+          onClick={() => (window.location.href = "/")}
+        />
+      </div> */}
+      <div className="NavbarLinks">
+        {/* <Link to="/">Home</Link> */}
+        <img
+          src="/image.png"
+          alt="WikiForces"
+          onClick={() => (window.location.href = "/")}
+        />
+        <Link to="/tags">Tags</Link>
+        <Link to="/innovations">Innovations</Link>
+        <Link to="/forum">Forum</Link>
+      </div>
+      <div className="NavbarAuth">
+        <Link className="login" to="/login">
+          Sign In
+        </Link>
+        <Link className="register" to="/register">
+          Sign Up
+        </Link>
+      </div>
+    </div>
+  );
 };
 
 export default Navbar;

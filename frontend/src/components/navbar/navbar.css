@@ -1,0 +1,41 @@
+.NavbarContainer {
+  top: 0;
+  height: 50px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* background: linear-gradient(180deg, #1b2735 0%, #090a0f 100%); */
+  margin-bottom: 50px;
+}
+
+.NavbarLogo {
+  width: 75px;
+  padding: 2em;
+}
+
+.NavBarLinks img {
+  width: 75px;
+  cursor: pointer;
+}
+
+.NavbarLinks {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+}
+
+.NavbarLinks a {
+  padding: 2em;
+  gap: 2em;
+  color: white;
+  text-decoration: none;
+}
+
+.NavbarAuth {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 2em;
+  gap: 2em;
+}

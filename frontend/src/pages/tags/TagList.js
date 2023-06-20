@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "../../components/navbar/navbar.js";
 
 const TagList = () => {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    setSearchInput(e.target.value);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -16,18 +23,26 @@ const TagList = () => {
       .finally(setLoading(false));
   }, []);
 
-  return;
-  <div>
-    <ul>
+  return (
+    <>
+      <Navbar />
+      <h1>Search by a tag name...</h1>
+      <input
+        type="search"
+        placeholder="Search by tag..."
+        onChange={handleChange}
+        value={searchInput}
+      />
+      <button>Search</button>
       {tags.map((tag, index) => (
-        <li key="index">
+        <p key={index}>
           <Link to={`/search`} state={{ initialSearch: `tag:${tag.name}` }}>
             {tag.name}
           </Link>
-        </li>
+        </p>
       ))}
-    </ul>
-  </div>;
+    </>
+  );
 };
 
 export default TagList;
