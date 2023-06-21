@@ -13,7 +13,9 @@ const Navbar = () => {
           onClick={() => (window.location.href = "/")}
         />
         <Link to="/tags">Tags</Link>
-        <Link to="/innovations">Innovations</Link>
+        <Link to="/search" state={{ initialSearch: "tag:Innovation" }}>
+          Innovations
+        </Link>
         <Link to="/forum">Forum</Link>
       </div>
       <div className="NavbarAuth">

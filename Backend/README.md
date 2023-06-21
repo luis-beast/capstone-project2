@@ -23,8 +23,9 @@
     - get includes all the tags a page uses
     - specific page
 
-### /pages/:id/history (Luis was here)
+### /pages/:id/history ✅
     - returns the edit history for a page including information of the user that edited a particular page
+    - results are sorted in descending order of creation date - most recent edit is at the top
 
 ### /pages/:page_id/history/:edit_id (Luis was here)
     - returns specific version of a particular page
@@ -48,15 +49,17 @@
 ### /tags/:id (get, put, del) ✅
     - get, update, or delete a specific tag
 
-### /Forum (get, post) ✅
+### /forum (get, post) ✅
     - returns a list of all Forum threads
     - post creates a new forum thread
 
-### /Forum/:id (get, post, put, del) ✅
+### /forum/:id (get, post, put, del) ✅
     - full CRUD on a specific forum
-    - get returns the comments with the users information
     - post creates a new comment
 
-### /Forum/comment/:id (get, put, del) 
+### /forum/:id/comments (get)
+    - returns all comments on a specific forum with user information
+
+### /forum/comment/:id (get, put, del) 
     - get, edit, and delete a single comment
     - get returns the comments with the users information

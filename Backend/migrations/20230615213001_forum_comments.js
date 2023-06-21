@@ -18,7 +18,7 @@ exports.up = function (knex) {
       .onUpdate("CASCADE")
       .onDelete("CASCADE");
     table.string("replies_to");
-    table.string("body");
+    table.text("body");
     table.timestamps(true, true);
   });
 };

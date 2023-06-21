@@ -1,7 +1,7 @@
 const request = require("supertest");
 const server = require("./server");
 const pages = require("./random_data/pages.json");
-const users = require("./random_Data/users.json");
+const users = require("./random_data/users.json");
 
 const removeIdAndTimestamp = (data) => {
   return data.map((item) => {

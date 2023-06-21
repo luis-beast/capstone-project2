@@ -1,12 +1,26 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+function ellipsify(str) {
+  if (str.length > 10) {
+    return str.substring(0, 30) + "...";
+  } else {
+    return str;
+  }
+}
+
 const SearchItem = ({ page }) => {
   return (
-    <div className="search-item">
-      <Link to={`/page/${page.id}`} state={{ page: page }}>
-        {page.title}
-      </Link>
+    <div className="search-item-container">
+      <div className="search-item">
+        <Link to={`/page/${page.id}`} state={{ page: page }}>
+          <h3>{page.title}</h3>
+          <p>{ellipsify(`${page.body}`)}</p>
+          {page.tags.map((tag, index) => (
+            <li>{tag.name}</li>
+          ))}
+        </Link>
+      </div>
     </div>
   );
 };
@@ -50,13 +64,13 @@ const SearchWiki = () => {
     const termArray = searchTerms.split(" ");
     for (let i = 0; i < termArray.length; i++) {
       let term = termArray[i];
-      if (term.includes("tag:")) {
+      if (term?.includes("tag:")) {
         let searchTag = term.split(":")[1];
         if (!page.tags?.find((tag) => tag.name === searchTag)) {
           return false;
         }
       } else {
-        if (!(page.title.includes(term) || page.body.includes(term))) {
+        if (!(page.title.includes(term) || page.body?.includes(term))) {
           return false;
         }
       }
@@ -67,7 +81,13 @@ const SearchWiki = () => {
   return (
     <div className="search-wiki-page">
       <div className="search-bar">
-        <input type="text" value={searchInput} onChange={handleChange} />
+        <p>Search by keywords, or by tags with "tag:[tagname]"</p>
+        <input
+          type="text"
+          value={searchInput}
+          onChange={handleChange}
+          placeholder="Search"
+        />
         <button className="search" onClick={handleSearch}>
           Search{" "}
         </button>
@@ -78,7 +98,9 @@ const SearchWiki = () => {
           return <SearchItem page={page} key={index} />;
         })}
       <h5>Can't find what you're looking for?</h5>
-      <button className="create-button">Create Article</button>
+      <Link to="/add-wiki">
+        <button className="create-button">Create Article</button>
+      </Link>
     </div>
   );
 };

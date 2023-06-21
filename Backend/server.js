@@ -13,7 +13,7 @@ server.use(cors());
 
 //Shows the server is running
 server.get("/", (req, res) => {
-  res.status(200).send("Application up and running. You better go catch it!");
+  res.status(200).send("Server is running.");
 });
 
 //users
@@ -205,8 +205,22 @@ server.delete("/pages/:id", (req, res) => {
 
 // Gets the history of a page
 server.get("/pages/:id/history", (req, res) => {
-  knex("edit_history")
+  knex("edit_history AS e")
+    .select(
+      "e.id",
+      "e.user_id",
+      "e.page_id",
+      "e.body",
+      "e.created_at",
+      "e.comment",
+      "u.email",
+      "u.first_name",
+      "u.last_name",
+      "u.is_admin"
+    )
+    .leftJoin("users AS u", "e.user_id", "u.id")
     .where("page_id", req.params.id)
+    .orderBy("e.created_at", "desc")
     .then((data) => res.status(200).json(data))
     .catch((err) => {
       console.error(err);
@@ -371,8 +385,34 @@ server.get("/forum/:id", (req, res) => {
       } else {
         res.status(404).json({ message: `Forum not found at id: ${input}.` });
       }
-    });
+    })
+    .catch((err) => res.status(500).json({ message: `Error: ${err}` }));
 });
+
+server.get("/forum/:id/comments", (req, res) => {
+  const input = req.params.id;
+  knex("forum_comments AS c")
+    .select(
+      "c.id",
+      "c.user_id",
+      "c.forum_id",
+      "c.body",
+      "c.created_at",
+      "c.updated_at",
+      "u.email",
+      "u.last_name",
+      "u.is_admin"
+    )
+    .leftJoin("users AS u", "c.user_id", "u.id")
+    .where("forum_id", input)
+    .then((data) => {
+      if (data.length > 0) {
+        res.status(200).json(data);
+      }
+    })
+    .catch((err) => res.status(404).json({ message: `Error: ${err}` }));
+});
+
 server.delete("/forum/:id", (req, res) => {
   const body = req.body;
   const queryValue = req.params.id;
@@ -411,7 +451,6 @@ server.get("/forum/comment/:id", (req, res) => {
   const input = req.params.id;
   knex("forum_threads")
     .where("id", input)
-    .insert(input)
     .then((data) => {
       if (data.length > 0) {
         res.status(200).json(data);

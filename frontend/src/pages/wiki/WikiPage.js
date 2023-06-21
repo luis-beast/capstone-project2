@@ -7,8 +7,8 @@ const WikiPage = () => {
   const [page, setPage] = useState({});
   const [loading, setLoading] = useState(true);
   const loggedIn = useContext(LoggedInContext);
-
   const { state } = useLocation();
+  const [innovation, setInnovation] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -19,14 +19,44 @@ const WikiPage = () => {
         .then((res) => res.json())
         .then((data) => {
           setPage(data[0]);
+          showInnovation();
         })
         .catch((err) => console.log(err))
         .finally(() => setLoading(false));
     }
   }, [id, state]);
 
+  const checkInnovation = (page, searchTerms) => {
+    const termArray = searchTerms.split(" ");
+    for (let i = 0; i < termArray.length; i++) {
+      let term = termArray[i];
+      if (term?.includes("tag:")) {
+        let searchTag = term.split(":")[1];
+        if (!page.tags?.find((tag) => tag.name === searchTag)) {
+          setInnovation(false);
+        }
+      } else {
+        if (!page.body?.includes("Innovation")) {
+          setInnovation(false);
+        }
+      }
+    }
+    setInnovation(true);
+  };
+
+  const showInnovation = () => {
+    setInnovation(true);
+  };
+
   return (
     <div className="wiki-page">
+      {innovation && (
+        <div>
+          {" "}
+          type="text" value="This is an innovation that can help you better your
+          work life! Check it out!"{" "}
+        </div>
+      )}
       <h1>{page.title}</h1>
       {loggedIn && (
         <Link to={`pages/${id}/edit`}>
