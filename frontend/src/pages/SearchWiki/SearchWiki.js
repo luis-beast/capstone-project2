@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import "./SearchWiki.css";
 
 function ellipsify(str) {
   if (str.length > 10) {
@@ -11,16 +12,15 @@ function ellipsify(str) {
 
 const SearchItem = ({ page }) => {
   return (
-    <div className="search-item-container">
-      <div className="search-item">
-        <Link to={`/page/${page.id}`} state={{ page: page }}>
-          <h3>{page.title}</h3>
-          <p>{ellipsify(`${page.body}`)}</p>
-          {page.tags.map((tag, index) => (
-            <li>{tag.name}</li>
-          ))}
-        </Link>
-      </div>
+    <div className="search-item">
+      <Link to={`/page/${page.id}`} state={{ page: page }}>
+        <h2>{page.title}</h2>
+        <p>{ellipsify(`${page.body}`)}</p>
+        <h3>Tags</h3>
+        {page.tags.map((tag, index) => (
+          <p>{tag.name}</p>
+        ))}
+      </Link>
     </div>
   );
 };

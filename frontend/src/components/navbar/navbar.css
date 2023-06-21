@@ -7,35 +7,38 @@
   justify-content: space-between;
   /* background: linear-gradient(180deg, #1b2735 0%, #090a0f 100%); */
   margin-bottom: 50px;
+  border-bottom: 1px solid #fff;
+}
+
+a {
+  text-decoration: none;
 }
 
 .NavbarLogo {
-  width: 100%;
-  padding: 2em;
-}
-
-.NavbarLinks img {
-  width: 65px;
-  cursor: pointer;
+  margin-top: 10px;
+  margin-left: 10px;
+  width: 5%;
+  cursor:pointer;
 }
 
 .NavbarLinks {
   display: flex;
   flex-direction: row;
   align-items: start;
+  color: white;
 }
 
 .NavbarLinks a {
-  padding: 2em;
-  gap: 2em;
+  padding: 1rem;
+  gap: 1rem;
   color: white;
-  text-decoration: none;
 }
 
 .NavbarAuth {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 2em;
-  gap: 2em;
+  padding: 1rem;
+  gap: 1rem;
+  color: white;
 }

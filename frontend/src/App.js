@@ -14,9 +14,24 @@ import {
   SearchWiki,
   AddWiki,
 } from "./pages";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Outlet,
+} from "react-router-dom";
+import Navbar from "./components/navbar/navbar.js";
 
 function App() {
+  const NavbarLayout = () => {
+    return (
+      <>
+        <Navbar />
+        <Outlet />
+      </>
+    );
+  };
+
   const [loggedIn, setLoggedin] = useState(false);
 
   return (
@@ -25,13 +40,15 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/page/:id" element={<WikiPage />} />
-            <Route path="/page/:id/edit-history" element={<EditHistory />} />
-            <Route path="/search" element={<SearchWiki />} />
-            <Route path="/tags" element={<TagList />} />
-            <Route path="/forum" element={<ForumList />} />
-            <Route path="/forum/:id" element={<ForumPage />} />
-            <Route path="/add-wiki" element={<AddWiki />} />
+            <Route element={<NavbarLayout />}>
+              <Route path="/page/:id" element={<WikiPage />} />
+              <Route path="/page/:id/edit-history" element={<EditHistory />} />
+              <Route path="/search" element={<SearchWiki />} />
+              <Route path="/tags" element={<TagList />} />
+              <Route path="/forum" element={<ForumList />} />
+              <Route path="/forum/:id" element={<ForumPage />} />
+              <Route path="/add-wiki" element={<AddWiki />} />
+            </Route>
           </Routes>
         </Router>
       </LoggedInContext.Provider>

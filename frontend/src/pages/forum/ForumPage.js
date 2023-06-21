@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Navbar } from "../../components";
 import "./forumPage.css";
 
@@ -7,6 +7,7 @@ import "./forumPage.css";
 
 const ForumPage = () => {
   const [forumComment, setForumComment] = useState([]);
+  const { id } = useParams();
 
   const saveToDb = (id) => {
     const init = {
@@ -29,22 +30,16 @@ const ForumPage = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("forum comments: ", data);
-        setForumComment({ ...forumComment, data });
+        setForumComment(data);
       });
   };
 
-  const handleChange = (e) => {
-    e.preventDefault();
-    setForumComment({ ...forumComment, [e.target.name]: e.target.value });
-  };
-
   useEffect(() => {
-    forumComment();
-  }, []);
+    getForumComments(id);
+  }, [id]);
 
   return (
     <div className="Wrapper">
-      <Navbar />
       <div className="Thread_container">
         <div className="Threads">
           {JSON.stringify(forumComment)}

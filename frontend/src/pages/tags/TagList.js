@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/navbar/navbar.js";
 
 const TagList = () => {
   const [tags, setTags] = useState([]);
@@ -31,7 +30,6 @@ const TagList = () => {
 
   return (
     <>
-      <Navbar />
       <h1>Search tags by name</h1>
       <input
         type="search"

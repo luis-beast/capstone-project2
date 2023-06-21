@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import LoggedInContext from "../../LoggedInContext";
+import "./wiki.css";
 
 const WikiPage = () => {
   const { id } = useParams();
@@ -19,42 +20,31 @@ const WikiPage = () => {
         .then((res) => res.json())
         .then((data) => {
           setPage(data[0]);
-          showInnovation();
+          checkInnovation(data[0]);
         })
         .catch((err) => console.log(err))
         .finally(() => setLoading(false));
     }
   }, [id, state]);
 
-  const checkInnovation = (page, searchTerms) => {
-    const termArray = searchTerms.split(" ");
-    for (let i = 0; i < termArray.length; i++) {
-      let term = termArray[i];
-      if (term?.includes("tag:")) {
-        let searchTag = term.split(":")[1];
-        if (!page.tags?.find((tag) => tag.name === searchTag)) {
-          setInnovation(false);
-        }
-      } else {
-        if (!page.body?.includes("Innovation")) {
-          setInnovation(false);
-        }
-      }
+  //TODO - why isn't this working?
+  const checkInnovation = (page) => {
+    if (page.tags.find((tag) => "Innovation" === tag.name)) {
+      setInnovation(true);
     }
-    setInnovation(true);
-  };
-
-  const showInnovation = () => {
-    setInnovation(true);
   };
 
   return (
     <div className="wiki-page">
       {innovation && (
-        <div>
-          {" "}
-          type="text" value="This is an innovation that can help you better your
-          work life! Check it out!"{" "}
+        <p className="inn-box">
+          This is an innovation that can help you better your work life! Check
+          it out!
+        </p>
+      )}
+      {state?.pastVersion && (
+        <div className="past-version-box">
+          <p>You are currently viewing a past version of this article.</p>
         </div>
       )}
       <h1>{page.title}</h1>
