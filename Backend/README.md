@@ -57,6 +57,6 @@
     - get returns the comments with the users information
     - post creates a new comment
 
-### /Forum/comment/:id (get, put, del)
+### /Forum/comment/:id (get, put, del) 
     - get, edit, and delete a single comment
     - get returns the comments with the users information

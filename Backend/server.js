@@ -210,11 +210,9 @@ server.get("/pages/:id/history", (req, res) => {
     .then((data) => res.status(200).json(data))
     .catch((err) => {
       console.error(err);
-      res
-        .status(404)
-        .json({
-          message: `Page ${req.params.id} does not have a history. Error: ${err}`,
-        });
+      res.status(404).json({
+        message: `Page ${req.params.id} does not have a history. Error: ${err}`,
+      });
     });
 });
 
@@ -403,6 +401,54 @@ server.put("/forum/:id", (req, res) => {
       res.status(500).json({
         message:
           "There was an error updating the forum, please try again later.",
+      });
+    });
+});
+
+// Forum comments
+// Are these :id's supposed to be the forum:id or the comments id?
+server.get("/forum/comment/:id", (req, res) => {
+  const input = req.params.id;
+  knex("forum_threads")
+    .where("id", input)
+    .insert(input)
+    .then((data) => {
+      if (data.length > 0) {
+        res.status(200).json(data);
+      } else {
+        res.status(404).json({ message: `Forum not found at id: ${input}.` });
+      }
+    });
+});
+
+server.put("/forum/comment/:id", (req, res) => {
+  const { page_id, name } = req.body;
+  let queryValue = req.params.id;
+  knex("forum_threads")
+    .where("id", queryValue)
+    .update({ page_id, name })
+    .then(() => res.status(201).json({ message: "You've updated the forum." }))
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        message:
+          "There was an error updating the forum, please try again later.",
+      });
+    });
+});
+
+server.delete("/forum/comment/:id", (req, res) => {
+  const body = req.body;
+  const queryValue = req.params.id;
+  knex("forum_threads")
+    .where("id", queryValue)
+    .del()
+    .then(() => {
+      res.status(200).json({ message: `${queryValue} has been deleted.` });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: `Unable to delete ${queryValue}, please try again later. Error: ${err}`,
       });
     });
 });

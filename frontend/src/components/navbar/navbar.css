@@ -10,12 +10,12 @@
 }
 
 .NavbarLogo {
-  width: 75px;
+  width: 100%;
   padding: 2em;
 }
 
-.NavBarLinks img {
-  width: 75px;
+.NavbarLinks img {
+  width: 65px;
   cursor: pointer;
 }
 

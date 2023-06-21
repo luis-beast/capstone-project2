@@ -5,16 +5,9 @@ import "./navbar.css";
 const Navbar = () => {
   return (
     <div className="NavbarContainer">
-      {/* <div className="NavbarLogo">
-        <img
-          src="/image.png"
-          alt="WikiForces"
-          onClick={() => (window.location.href = "/")}
-        />
-      </div> */}
       <div className="NavbarLinks">
-        {/* <Link to="/">Home</Link> */}
         <img
+          className="NavbarLogo"
           src="/image.png"
           alt="WikiForces"
           onClick={() => (window.location.href = "/")}

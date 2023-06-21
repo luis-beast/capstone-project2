@@ -77,6 +77,8 @@ const SearchWiki = () => {
         .map((page, index) => {
           return <SearchItem page={page} key={index} />;
         })}
+      <h5>Can't find what you're looking for?</h5>
+      <button className="create-button">Create Article</button>
     </div>
   );
 };
