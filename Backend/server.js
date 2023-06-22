@@ -177,10 +177,14 @@ server.get("/pages/:id", (req, res) => {
 
 // Updates page
 server.put("/pages/:id", (req, res) => {
+  //TODO - add more code to parse the request body, which should also contain tags, and update the tags and page_tags tables.
+  //TODO - add entry to edit history
   knex("pages")
     .where("id", req.params.id)
     .update(req.body)
-    .then(() => res.status(201).json({ message: "Your event was updated." }))
+    .then(() => {
+      res.status(201).json({ message: "Your event was updated." });
+    })
     .catch((err) => {
       console.error(err);
       res
@@ -426,30 +430,6 @@ server.get("/forum/:id", (req, res) => {
     .catch((err) => res.status(500).json({ message: `Error: ${err}` }));
 });
 
-server.get("/forum/:id/comments", (req, res) => {
-  const input = req.params.id;
-  knex("forum_comments AS c")
-    .select(
-      "c.id",
-      "c.user_id",
-      "c.forum_id",
-      "c.body",
-      "c.created_at",
-      "c.updated_at",
-      "u.email",
-      "u.last_name",
-      "u.is_admin"
-    )
-    .leftJoin("users AS u", "c.user_id", "u.id")
-    .where("forum_id", input)
-    .then((data) => {
-      if (data.length > 0) {
-        res.status(200).json(data);
-      }
-    })
-    .catch((err) => res.status(404).json({ message: `Error: ${err}` }));
-});
-
 server.delete("/forum/:id", (req, res) => {
   const body = req.body;
   const queryValue = req.params.id;
@@ -528,6 +508,30 @@ server.post("/forum/comment/:id", (req, res) => {
           "There was an error posting to the forum, please try again later.",
       });
     });
+});
+
+server.get("/forum/:id/comments", (req, res) => {
+  const input = req.params.id;
+  knex("forum_comments AS c")
+    .select(
+      "c.id",
+      "c.user_id",
+      "c.forum_id",
+      "c.body",
+      "c.created_at",
+      "c.updated_at",
+      "u.email",
+      "u.last_name",
+      "u.is_admin"
+    )
+    .leftJoin("users AS u", "c.user_id", "u.id")
+    .where("forum_id", input)
+    .then((data) => {
+      if (data.length > 0) {
+        res.status(200).json(data);
+      }
+    })
+    .catch((err) => res.status(404).json({ message: `Error: ${err}` }));
 });
 
 // Where would the corelation between the user that's posting. ✅context already setup to handle logged in user✅

@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import LoggedInContext from "../../LoggedInContext";
 import "./wiki.css";
+import parse from "html-react-parser";
 
 const WikiPage = () => {
   const { id, edit_id } = useParams(); //If edit_id is defined, we are viewing a past version of the page.
@@ -108,7 +109,7 @@ const WikiPage = () => {
             </Link>
           </div>
           <div className="wiki-page-text">
-            <article>{page.body}</article>
+            <article>{parse(page.body)}</article>
           </div>
           {edit_id && page.email && <div>Edit by {page.email}</div>}
         </>
