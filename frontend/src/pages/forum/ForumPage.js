@@ -8,8 +8,16 @@ import "./forumPage.css";
 const ForumPage = () => {
   const [forumComment, setForumComment] = useState([]);
   const { id } = useParams();
+  const [userInput, setUserInput] = useState({
+    body: "",
+  });
 
+  const handleChange = (e) => {
+    setUserInput({ ...userInput, [e.target.name]: e.target.value });
+  };
+  // add code to prevenet being able to comment if it's empty.
   const saveToDb = (id) => {
+    console.log("Id from saveToDb: ", id);
     const init = {
       method: "POST",
       headers: {
@@ -47,12 +55,10 @@ const ForumPage = () => {
             className="New_comment"
             placeholder="Enter text here..."
             name="body"
-            // onChange={}
+            onChange={handleChange}
           />
-          <button>Comment</button>
-          <div className="Thread_comments">
-            <span>sample text</span>
-          </div>
+          <button onClick={() => saveToDb(id)}>Comment</button>
+          <div className="Thread_comments"></div>
         </div>
       </div>
     </div>

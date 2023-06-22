@@ -230,6 +230,43 @@ server.get("/pages/:id/history", (req, res) => {
     });
 });
 
+// Gets a single iteration of a page from the edit history
+server.get("/pages/:id/history/:edit_id", (req, res) => {
+  knex("edit_history AS e")
+    .select(
+      "e.id",
+      "e.user_id",
+      "e.page_id",
+      "e.body",
+      "e.created_at",
+      "e.comment",
+      "u.email",
+      "u.first_name",
+      "u.last_name",
+      "u.is_admin",
+      "p.title"
+    )
+    .innerJoin("pages AS p", "e.page_id", "=", "p.id")
+    .leftJoin("users AS u", "e.user_id", "u.id")
+    .where("e.id", req.params.edit_id)
+    .andWhere("e.page_id", req.params.id)
+    .then((data) => {
+      if (data.length === 1) {
+        res.status(200).json(data);
+      } else {
+        throw new Error(
+          `History entry ${req.params.edit_id} does not match page ${req.params.id}`
+        );
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(404).json({
+        message: `${err}`,
+      });
+    });
+});
+
 // TODO
 // still
 server.post("/login", async (req, res) => {
@@ -472,6 +509,43 @@ server.put("/forum/comment/:id", (req, res) => {
       res.status(500).json({
         message:
           "There was an error updating the forum, please try again later.",
+      });
+    });
+});
+server.post("/forum/comment/:id", (req, res) => {
+  const { user_id, body } = req.body;
+  let queryValue = req.params.id;
+  knex("forum_threads")
+    .where("id", queryValue)
+    .insert({ user_id: 2, body })
+    .then(() =>
+      res.status(201).json({ message: "You've posted to the forum." })
+    )
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        message:
+          "There was an error posting to the forum, please try again later.",
+      });
+    });
+});
+
+// Where would the corelation between the user that's posting. ✅context already setup to handle logged in user✅
+//TODO - handle replies
+server.post("/forum/:id/comments", (req, res) => {
+  const { user_id, body, replies_to } = req.body;
+  console.log("body: ", body);
+  let threadId = req.params.id;
+  knex("forum_comments")
+    .insert({ user_id: user_id, forum_id: threadId, body, replies_to })
+    .then(() =>
+      res.status(201).json({ message: "You've posted to the forum." })
+    )
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        message:
+          "There was an error posting to the forum, please try again later.",
       });
     });
 });

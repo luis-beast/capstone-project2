@@ -88,7 +88,8 @@
 </row>
 <row name="replies_to" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
-<default>NULL</default></row>
+<default>NULL</default><relation table="forum_comments" row="id" />
+</row>
 <row name="body" null="1" autoincrement="0">
 <datatype>MEDIUMTEXT</datatype>
 <default>NULL</default></row>

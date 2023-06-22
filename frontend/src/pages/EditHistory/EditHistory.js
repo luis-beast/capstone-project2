@@ -34,10 +34,14 @@ const EditHistory = () => {
   const handleRowClick = (params) => {
     let title = `${params.row.created_at}::${currentPage.title}`;
     let body = params.row.body;
-    navigate(`/page/${id}`, {
+    navigate(`/page/${id}/history/${params.row.id}`, {
       state: {
-        page: { ...currentPage, title: title, body: body },
-        pastVersion: true,
+        page: {
+          ...currentPage,
+          title: title,
+          body: body,
+          email: params.row.email,
+        },
       },
     });
   };

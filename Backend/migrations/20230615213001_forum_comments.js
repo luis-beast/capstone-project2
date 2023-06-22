@@ -17,7 +17,12 @@ exports.up = function (knex) {
       .references("forum_threads.id")
       .onUpdate("CASCADE")
       .onDelete("CASCADE");
-    table.string("replies_to");
+    table.integer("replies_to");
+    table
+      .foreign("replies_to")
+      .references("forum_comments.id")
+      .onUpdate("CASCADE")
+      .onDelete("CASCADE");
     table.text("body");
     table.timestamps(true, true);
   });

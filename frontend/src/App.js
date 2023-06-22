@@ -42,7 +42,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route element={<NavbarLayout />}>
               <Route path="/page/:id" element={<WikiPage />} />
-              <Route path="/page/:id/edit-history" element={<EditHistory />} />
+              <Route path="/page/:id/history" element={<EditHistory />} />
+              <Route path="/page/:id/history/:edit_id" element={<WikiPage />} />
               <Route path="/search" element={<SearchWiki />} />
               <Route path="/tags" element={<TagList />} />
               <Route path="/forum" element={<ForumList />} />
