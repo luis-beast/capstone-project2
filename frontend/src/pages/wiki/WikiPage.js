@@ -107,6 +107,10 @@ const WikiPage = () => {
             <Link to={`/page/${id}/history`}>
               <button>View History</button>
             </Link>
+            <Link to={`/page/${id}/edit`}>
+              {" "}
+              <button>Edit Page</button>
+            </Link>
           </div>
           <div className="wiki-page-text">
             <article>{parse(page.body)}</article>

@@ -1,15 +1,18 @@
 import { useState, useEffect, useContext } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./EditWiki.css";
 
+//TODO - prevent page from loading if user is not logged in (once we add login support)
 const EditWiki = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const { state } = useLocation();
   const [page, setPage] = useState({});
   const [loading, setLoading] = useState(true);
   const [editorValue, setEditorValue] = useState("");
+  const [comment, setComment] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -17,6 +20,7 @@ const EditWiki = () => {
     if (state?.page && state.page.id === id) {
       //cached version of the page passed in via state
       setPage(state.page);
+      setLoading(false);
     } else {
       fetch(`http://localhost:8080/pages/${id}`)
         .then((res) => res.json())
@@ -33,10 +37,21 @@ const EditWiki = () => {
     }
   }, [id, state]);
 
+  const safeSetComment = (e) => {
+    if (e.target.value?.length <= 255) {
+      setComment(e.target.value);
+    }
+  };
+
   const saveChanges = () => {
     setLoading(true);
     const newBody = editorValue;
-    const newArticle = { id: page.id, title: page.title, body: newBody }; //TODO - add tags
+    const newArticle = {
+      id: page.id,
+      title: page.title,
+      body: newBody,
+      comment: comment,
+    }; //TODO - add updated tags and user ID of logged-in user
     const init = {
       method: "PUT",
       headers: {
@@ -47,8 +62,7 @@ const EditWiki = () => {
     fetch(`http://localhost:8080/pages/${id}`, init)
       .then((res) => {
         if (res.status == 201) {
-          console.log("Article successfully updated");
-          //TODO - navigate user to the article page
+          navigate(`/page/${page.id}`, { replace: true });
         } else {
           throw new Error(`${res.status} Error`);
         }
@@ -71,7 +85,18 @@ const EditWiki = () => {
         />
       </div>
       <div className="button-container">
-        <button onClick={saveChanges}>Save Changes</button>
+        <input
+          type="text"
+          value={comment}
+          onChange={safeSetComment}
+          placeholder="comments"
+        />
+        <button onClick={saveChanges} disabled={!comment?.trim() || loading}>
+          Save Changes
+        </button>
+        <p>
+          {comment ? `${comment.length}/255 characters` : "Comment Required"}
+        </p>
       </div>
       <div className="tag-container"></div>
     </div>

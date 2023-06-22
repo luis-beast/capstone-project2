@@ -177,19 +177,34 @@ server.get("/pages/:id", (req, res) => {
 
 // Updates page
 server.put("/pages/:id", (req, res) => {
-  //TODO - add more code to parse the request body, which should also contain tags, and update the tags and page_tags tables.
-  //TODO - add entry to edit history
-  knex("pages")
-    .where("id", req.params.id)
-    .update(req.body)
-    .then(() => {
-      res.status(201).json({ message: "Your event was updated." });
+  let { id, title, body, userId, comment, tags } = req.body;
+
+  knex
+    .transaction((trx) => {
+      let pageTransactionPromise = trx("pages")
+        .where("id", req.params.id)
+        .update({ id, title, body });
+
+      let editHistoryTransactionPromise = trx("edit_history").insert({
+        page_id: id,
+        user_id: userId,
+        body: body,
+        comment: comment,
+      });
+      //TODO - update tags and page_tags table
+      return Promise.all([
+        pageTransactionPromise,
+        editHistoryTransactionPromise,
+      ]);
+    })
+    .then((inserts) => {
+      res.status(201).json({ message: "Your page was updated." });
     })
     .catch((err) => {
-      console.error(err);
+      console.log(err);
       res
         .status(500)
-        .json({ message: "There was an error updating this event!" });
+        .json({ message: "There was an error updating this page!" });
     });
 });
 

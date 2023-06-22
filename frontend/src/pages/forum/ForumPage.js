@@ -8,6 +8,9 @@ const ForumPage = () => {
   const { id } = useParams();
   const [userInput, setUserInput] = useState({
     body: "",
+  });
+  const [replyInput, setReplyInput] = useState({
+    body: "",
     replies_to: "",
   });
   const [errors, setErrors] = useState({
@@ -17,6 +20,10 @@ const ForumPage = () => {
   const handleChange = (e) => {
     setUserInput({ ...userInput, [e.target.name]: e.target.value });
     // setUserInput({...userInput.replies_to, [e.target.]})
+  };
+
+  const handleReplyChange = (e, commentId) => {
+    setReplyInput({ ...replyInput, [commentId]: e.target.value });
   };
 
   const elementId = (e) => {
@@ -67,21 +74,20 @@ const ForumPage = () => {
       });
   };
   //should be refering to the comment id
-  const replyToComment = () => {
+  const replyToComment = (commentId) => {
     const init = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(userInput),
-      replies_to: JSON.stringify(userInput.replies_to),
+      body: JSON.stringify({ body: replyInput.body, replies_to: commentId }),
     };
     fetch(`http://localhost:8080/forum/${id}/comments`, init)
       .then((res) => res.json())
       .then((data) => {
         console.log("Successfully responded to comment: ", data);
       });
-    setUserInput({ body: "" });
+    setReplyInput({ body: "" });
   };
 
   useEffect(() => {
@@ -95,11 +101,22 @@ const ForumPage = () => {
           {forumComment.map((comment, index) => {
             return (
               <div key={index} className="Comment">
-                {JSON.stringify(comment)}
-                <button onClick={elementId}></button>
+                {/* {JSON.stringify(comment)} */}
+                {comment.id}: {comment.body}
+                <textarea
+                  className="reply-comment"
+                  placeholder="Enter your reply here..."
+                  name={`reply-${index}`}
+                  value={replyInput[index] || ""}
+                  onChange={(e) => handleReplyChange(e, index)}
+                />
+                <button onClick={() => replyToComment(comment.id)}>
+                  Reply
+                </button>
               </div>
             );
           })}
+          <hr />
           {errors.body && <div className="error">{errors.body}</div>}
           <textarea
             className="New_comment"
