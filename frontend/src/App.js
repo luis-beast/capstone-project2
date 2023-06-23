@@ -7,7 +7,7 @@ import {
   EditWiki,
   ForumList,
   ForumPage,
-  Login,
+  LoginPage,
   Register,
   TagList,
   WikiPage,
@@ -50,6 +50,7 @@ function App() {
               <Route path="/forum" element={<ForumList />} />
               <Route path="/forum/:id" element={<ForumPage />} />
               <Route path="/add-wiki" element={<AddWiki />} />
+              <Route path="/login" element={<LoginPage />} />
             </Route>
           </Routes>
         </Router>

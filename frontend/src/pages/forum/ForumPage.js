@@ -13,9 +13,25 @@ const ForumPage = () => {
     body: "",
     replies_to: "",
   });
+  const [forumName, setForumName] = useState("");
   const [errors, setErrors] = useState({
     body: "",
   });
+  const [shown, setShown] = useState(-1);
+
+  useEffect(() => {
+    getForumName(id);
+  }, [id]);
+
+  const getForumName = (id) => {
+    fetch(`http://localhost:8080/forum/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("forum", data);
+        setForumName(data[0].name);
+        console.log("data.name: ", data[0].name);
+      });
+  };
 
   const handleChange = (e) => {
     setUserInput({ ...userInput, [e.target.name]: e.target.value });
@@ -23,11 +39,8 @@ const ForumPage = () => {
   };
 
   const handleReplyChange = (e, commentId) => {
-    setReplyInput({ ...replyInput, [commentId]: e.target.value });
-  };
-
-  const elementId = (e) => {
-    console.log(e.currentTarget.id);
+    setReplyInput({ ...replyInput, body: e.target.value });
+    console.log(e.target.value);
   };
 
   const handleValidation = () => {
@@ -98,25 +111,42 @@ const ForumPage = () => {
     <div className="Wrapper">
       <div className="Thread_container">
         <div className="Threads">
-          {forumComment.map((comment, index) => {
-            return (
-              <div key={index} className="Comment">
-                {/* {JSON.stringify(comment)} */}
-                {comment.id}: {comment.body}
-                <textarea
-                  className="reply-comment"
-                  placeholder="Enter your reply here..."
-                  name={`reply-${index}`}
-                  value={replyInput[index] || ""}
-                  onChange={(e) => handleReplyChange(e, index)}
-                />
-                <button onClick={() => replyToComment(comment.id)}>
-                  Reply
-                </button>
-              </div>
-            );
-          })}
+          <h1>{forumName}</h1>
+          {forumComment?.length &&
+            forumComment.map((comment, index) => {
+              return (
+                <div className="Top_Comment_id">
+                  <h1>{forumComment.name}</h1>
+                  <div key={index} className="Comment">
+                    {/* {JSON.stringify(comment)} */}
+                    {comment.id}: {comment.body}
+                    {shown == comment.id ? (
+                      <>
+                        <textarea
+                          className="reply-comment"
+                          placeholder="Enter your reply here..."
+                          name={`reply-${index}`}
+                          // value={replyInput[index] || ""}
+                          onChange={(e) => handleReplyChange(e, index)}
+                        />
+                        <button onClick={() => replyToComment(comment.id)}>
+                          Submit Comment
+                        </button>
+                      </>
+                    ) : null}
+                    <button onClick={() => setShown(comment.id)}>
+                      Reply to Comment
+                    </button>
+                    {console.log("comment.replies_to: ", comment.replies_to)}
+                    {comment.id == comment.replies_to ? (
+                      <>{comment.body}</>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
           <hr />
+          {/* required isn't working.  */}
           {errors.body && <div className="error">{errors.body}</div>}
           <textarea
             className="New_comment"

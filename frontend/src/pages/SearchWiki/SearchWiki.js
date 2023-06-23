@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import parse from "html-react-parser";
 import "./SearchWiki.css";
 
 function ellipsify(str) {
@@ -11,14 +12,16 @@ function ellipsify(str) {
 }
 
 const SearchItem = ({ page }) => {
+  const stringBody = page.body.replace(/<\/?[^>]+(>|$)/g, "");
+
   return (
     <div className="search-item">
       <Link to={`/page/${page.id}`} state={{ page: page }}>
         <h2>{page.title}</h2>
-        <p>{ellipsify(`${page.body}`)}</p>
+        <p>{ellipsify(`${stringBody}`)}</p>
         <h3>Tags</h3>
-        {page.tags.map((tag, index) => (
-          <p>{tag.name}</p>
+        {page.tags.map((tag) => (
+          <p key={tag.id}>{tag.name}</p>
         ))}
       </Link>
     </div>

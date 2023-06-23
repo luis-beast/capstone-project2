@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import "./tags.css";
 
 const TagList = () => {
   const [tags, setTags] = useState([]);
@@ -33,7 +34,7 @@ const TagList = () => {
       <h1>Search tags by name</h1>
       <input
         type="search"
-        placeholder="Search tags..."
+        placeholder="Search Tags..."
         onChange={handleChange}
         value={searchInput}
       />
@@ -43,11 +44,11 @@ const TagList = () => {
           tag.name.toLowerCase().includes(searchInput.toLowerCase())
         )
         .map((tag, index) => (
-          <p key={index}>
+          <div className="tag-names" key={index}>
             <Link to={`/search`} state={{ initialSearch: `tag:${tag.name}` }}>
               {tag.name}
             </Link>
-          </p>
+          </div>
         ))}
     </>
   );

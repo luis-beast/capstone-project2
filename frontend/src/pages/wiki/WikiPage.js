@@ -11,7 +11,6 @@ const WikiPage = () => {
   const loggedIn = useContext(LoggedInContext);
   const { state } = useLocation();
   const [innovation, setInnovation] = useState(false);
-
   useEffect(() => {
     setLoading(true);
     if (state?.page && state.page.id === id) {
@@ -120,6 +119,18 @@ const WikiPage = () => {
       ) : (
         <p>{loading ? "loading" : "ERROR: page not found"}</p>
       )}
+      <div className="tag-container">
+        {!!page?.tags?.length &&
+          page.tags.map((tag) => (
+            <Link
+              to={`/search`}
+              key={tag.id}
+              state={{ initialSearch: `tag:${tag.name}` }}
+            >
+              <div className="page-links">{tag.name}</div>
+            </Link>
+          ))}
+      </div>
     </div>
   );
 };

@@ -8,6 +8,21 @@ const knex = require("knex")(
 
 server.use(express.json());
 server.use(cors());
+//Each edited page looks like {id: page id, token: user token, timestamp: time created}
+const activePageLocks = []; //If this app is ever deployed, this needs to be replaced with an ES6 set for faster queries.
+const millisecondsToEditPage = 3600000;
+const removePageLock = (lockToRemove) => {
+  let indexToRemove = activePageLocks.findIndex(
+    (lock) =>
+      lockToRemove.token === lock.token &&
+      lockToRemove.id === lock.id &&
+      lockToRemove.timestamp === lock.timestamp
+  );
+  console.log(indexToRemove);
+  if (indexToRemove >= 0) {
+    activePageLocks.splice(indexToRemove, 1);
+  }
+};
 
 //Do not call server.listen() in this file, see index.js
 
@@ -177,35 +192,78 @@ server.get("/pages/:id", (req, res) => {
 
 // Updates page
 server.put("/pages/:id", (req, res) => {
-  let { id, title, body, userId, comment, tags } = req.body;
+  let { id, title, body, userId, comment, tags, lock } = req.body; //Note: tags is an array of strings, not projects
+  let found = activePageLocks.find(
+    (pageLock) =>
+      lock.token === pageLock.token &&
+      lock.id === pageLock.id &&
+      lock.timestamp === pageLock.timestamp
+  );
 
-  knex
-    .transaction((trx) => {
-      let pageTransactionPromise = trx("pages")
-        .where("id", req.params.id)
-        .update({ id, title, body });
+  if (found && id == req.params.id) {
+    knex
+      .transaction((trx) => {
+        let pageTransactionPromise = trx("pages")
+          .where("id", req.params.id)
+          .update({ id, title, body });
 
-      let editHistoryTransactionPromise = trx("edit_history").insert({
-        page_id: id,
-        user_id: userId,
-        body: body,
-        comment: comment,
+        let editHistoryTransactionPromise = trx("edit_history").insert({
+          page_id: id,
+          user_id: userId,
+          body: body,
+          comment: comment,
+        });
+
+        let tagsTransactionPromise = trx("tags")
+          .then((dbTags) => {
+            let tagsInsertPromiseArray = [];
+            tags.forEach((tagName) => {
+              if (!dbTags.find((dbTag) => dbTag.name === tagName)) {
+                tagsInsertPromiseArray.push(
+                  trx("tags").insert({ name: tagName })
+                );
+              }
+            });
+            return Promise.all(tagsInsertPromiseArray);
+          })
+          .then(() => {
+            return trx("page_tags")
+              .where("page_id", id)
+              .del()
+              .then(() => {
+                let pageTagsInsertPromiseArray = tags.map((tagName) => {
+                  return trx("tags")
+                    .where("name", tagName)
+                    .then((dbTagsArray) => {
+                      return trx("page_tags").insert({
+                        page_id: id,
+                        tag_id: dbTagsArray[0].id,
+                      });
+                    });
+                });
+                return Promise.all(pageTagsInsertPromiseArray);
+              });
+          });
+
+        return Promise.all([
+          pageTransactionPromise,
+          editHistoryTransactionPromise,
+          tagsTransactionPromise,
+        ]);
+      })
+      .then((inserts) => {
+        removePageLock(lock);
+        return res.status(201).json({ message: "Your page was updated." });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res
+          .status(500)
+          .json({ message: "There was an error updating this page!" });
       });
-      //TODO - update tags and page_tags table
-      return Promise.all([
-        pageTransactionPromise,
-        editHistoryTransactionPromise,
-      ]);
-    })
-    .then((inserts) => {
-      res.status(201).json({ message: "Your page was updated." });
-    })
-    .catch((err) => {
-      console.log(err);
-      res
-        .status(500)
-        .json({ message: "There was an error updating this page!" });
-    });
+  } else {
+    return res.status(401).json({ message: "Invalid lock, page not updated." });
+  }
 });
 
 // Deletes page
@@ -220,6 +278,49 @@ server.delete("/pages/:id", (req, res) => {
         Error: `Unable to delete event: ${req.params.id}. Error: ${err}`,
       });
     });
+});
+
+//Requests permission to edit the page, does not access database.
+server.post("/pages/:id/edit-request", (req, res) => {
+  if (req.body && req.body.id === req.params.id) {
+    const { id, token, timestamp } = req.body;
+    let found = activePageLocks.find(
+      (pageLock) =>
+        token === pageLock.token &&
+        id === pageLock.id &&
+        timestamp === pageLock.timestamp
+    );
+    if (found) {
+      //Found a valid lock, stop execution and send it back.
+      return res
+        .status(200)
+        .send({ message: "Edit access granted", lock: found });
+    }
+  }
+  //No valid user authentication found, proceeding to check for new requests:
+  let lock = activePageLocks.find((pageLock) => pageLock.id === req.params.id);
+  if (lock) {
+    return res.status(423).send({ message: "Access denied, resource locked" });
+  } else {
+    let token = Math.floor(Math.random() * 10000);
+    let newLock = { id: req.params.id, token: token, timestamp: Date.now() };
+    activePageLocks.push(newLock);
+    res.status(201).send({ message: "Edit access granted", lock: newLock });
+    //Delete lock after 1 hour
+    setTimeout(removePageLock, millisecondsToEditPage, newLock);
+  }
+});
+
+//User has finished editing the page
+server.delete("/pages/:id/edit-request", (req, res) => {
+  if (req.body && req.body.id === req.params.id) {
+    removePageLock(req.body);
+    return res.status(200).send({ message: "Lock removed" });
+  } else {
+    return res
+      .status(403)
+      .send({ message: "No request body, cannot authenticate." });
+  }
 });
 
 // Gets the history of a page
@@ -553,7 +654,7 @@ server.get("/forum/:id/comments", (req, res) => {
 //TODO - handle replies
 server.post("/forum/:id/comments", (req, res) => {
   const { user_id, body, replies_to } = req.body;
-  console.log("body: ", body);
+  console.log("body: ", req.body);
   let threadId = req.params.id;
   knex("forum_comments")
     .insert({ user_id: user_id, forum_id: threadId, body, replies_to })

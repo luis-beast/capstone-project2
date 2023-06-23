@@ -27,8 +27,14 @@
     - returns the edit history for a page including information of the user that edited a particular page
     - results are sorted in descending order of creation date - most recent edit is at the top
 
-### /pages/:page_id/history/:edit_id (Luis was here)
+### /pages/:page_id/history/:edit_id ✅
     - returns specific version of a particular page
+
+### /pages/:id/edit-request (post, delete) ✅
+    - POST checks if anyone else is currently editing the page and returns a lock {id, token, timestamp} if nobody else is. 
+        - Requests to edit a page are only granted if the page is not locked OR if the request body contains that page's lock.a
+    - DELETE removes the lock in the request body from the list of active page locks.
+    - These API requests do not touch the database, the page locks are stored in memory on the API server. 
 
 ### /pages?search=example (get)   (This is currrently being done in the front end.)
     - returns list of pages where title/body contains "example"

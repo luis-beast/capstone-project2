@@ -6,12 +6,33 @@ const AddWiki = () => {
     title: "",
     body: "",
   });
+  const [errors, setErrors] = useState({
+    title: "",
+    body: "",
+  });
 
   const handleChange = (e) => {
     setUserInput({ ...userInput, [e.target.name]: e.target.value });
   };
 
+  const handleValidation = () => {
+    let errors = {};
+    let formIsValid = true;
+
+    if (!userInput.title) {
+      formIsValid = false;
+      errors["title"] = "You must enter a title!";
+    }
+
+    setErrors(errors);
+    return formIsValid;
+  };
+
   const saveToDb = () => {
+    if (!handleValidation()) {
+      return;
+    }
+
     const init = {
       method: "POST",
       headers: {
@@ -36,6 +57,7 @@ const AddWiki = () => {
             <h1 className="wiki-header">Enter your new WikiPage here</h1>
           </div>
           <div className="wiki-title-cointainer">
+            {errors.title && <div className="error">{errors.title}</div>}
             <input
               className="wiki-input-title"
               type="text"

@@ -17,7 +17,6 @@ const ForumList = () => {
     fetch("http://localhost:8080/forum")
       .then((res) => res.json())
       .then((data) => {
-        console.log("forum", data);
         setForum(data);
       });
   };
