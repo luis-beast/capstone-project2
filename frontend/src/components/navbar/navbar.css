@@ -34,13 +34,17 @@ a {
   color: white;
 }
 
-.NavbarAuth {
+.navbar-auth {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 1rem;
   gap: 1rem;
   color: white;
+}
+
+.navbar-auth * {
+  cursor: pointer
 }
 
 .login,

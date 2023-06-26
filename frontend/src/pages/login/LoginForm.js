@@ -16,7 +16,7 @@ function LoginForm({ handleLogin }) {
   return (
     <form onSubmit={submitHandler}>
       <div className="form-inner">
-        <h2>Login</h2>
+        <h2>Sign In</h2>
         <div className="form-group">
           <label htmlFor="name">Email:</label>
           <input
@@ -40,7 +40,7 @@ function LoginForm({ handleLogin }) {
             value={details.pasword}
           />
         </div> */}
-        <input type="submit" value="LOGIN" />
+        <input type="submit" value="SIGN IN" />
         <p>
           Do not have an account? <Link to="/register">Click here!</Link>
         </p>

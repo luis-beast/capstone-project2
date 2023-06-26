@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import "./ForumComment.css";
+import UserContext from "../../userContext";
 
 const ForumComment = ({ comment, offset, shown, setShown }) => {
   const [replyInput, setReplyInput] = useState("");
+  const [userData, setUserData] = useContext(UserContext);
 
   const handleReplyChange = (e) => {
     setReplyInput(e.target.value);
@@ -34,8 +36,10 @@ const ForumComment = ({ comment, offset, shown, setShown }) => {
     comment && (
       <div className={`forum-comment comment-level-${offset}`}>
         {comment.id}: {comment.body}
-        <button onClick={() => setShown(comment.id)}>Reply to Comment</button>
-        {shown == comment.id && (
+        {userData.id && (
+          <button onClick={() => setShown(comment.id)}>Reply to Comment</button>
+        )}
+        {userData.id && shown == comment.id && (
           <>
             <textarea
               className="reply-comment"

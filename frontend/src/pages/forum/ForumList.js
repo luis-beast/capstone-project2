@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "../../components";
-import "./forum.css";
+import "./forumList.css";
 
 const ForumList = () => {
   const navigate = useNavigate();
@@ -44,8 +44,12 @@ const ForumList = () => {
         {forum.length > 0 &&
           forum.map((line, index) => {
             return (
-              <div onClick={() => handleClick(line.id)} key={index}>
-                {JSON.stringify(line)}
+              <div
+                className="forum"
+                onClick={() => handleClick(line.id)}
+                key={index}
+              >
+                {JSON.stringify(line.name)}
               </div>
             );
           })}

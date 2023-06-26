@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { Navbar } from "../../components";
 import "./forumPage.css";
 import ForumComment from "../../components/ForumComment/ForumComment";
+import UserContext from "../../userContext";
 
 const ForumPage = () => {
   const [forumComment, setForumComment] = useState([]);
@@ -19,6 +20,7 @@ const ForumPage = () => {
     body: "",
   });
   const [shown, setShown] = useState(-1);
+  const [userData, setUserData] = useContext(UserContext);
 
   useEffect(() => {
     getForumName(id);
@@ -146,16 +148,21 @@ const ForumPage = () => {
               })}
           <hr />
           {errors.body && <div className="error">{errors.body}</div>}
-          <textarea
-            className="New_comment"
-            placeholder="Enter text here..."
-            name="body"
-            required
-            value={userInput.body}
-            onChange={handleChange}
-          />
-          <button onClick={() => saveToDb(id)}>Comment</button>
-          <div className="Thread_comments"></div>
+          {userData.id && (
+            <>
+              {" "}
+              <textarea
+                className="New_comment"
+                placeholder="Enter text here..."
+                name="body"
+                required
+                value={userInput.body}
+                onChange={handleChange}
+              />
+              <button onClick={() => saveToDb(id)}>Comment</button>
+              <div className="Thread_comments"></div>
+            </>
+          )}
         </div>
       </div>
     </div>

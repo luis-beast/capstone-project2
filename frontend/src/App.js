@@ -20,7 +20,7 @@ import {
   Route,
   Outlet,
 } from "react-router-dom";
-import Navbar from "./components/navbar/navbar.js";
+import { Navbar, Gatekeeper } from "./components";
 import useSessionStorageState from "./useSessionStorageState";
 
 function App() {
@@ -28,6 +28,15 @@ function App() {
     return (
       <>
         <Navbar />
+        <Outlet />
+      </>
+    );
+  };
+
+  const SecurePage = ({ userData }) => {
+    return (
+      <>
+        <Gatekeeper userData={userData} />
         <Outlet />
       </>
     );
@@ -42,17 +51,19 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route element={<NavbarLayout />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/page/:id" element={<WikiPage />} />
-              <Route path="/page/:id/edit" element={<EditWiki />} />
               <Route path="/page/:id/history" element={<EditHistory />} />
               <Route path="/page/:id/history/:edit_id" element={<WikiPage />} />
               <Route path="/search" element={<SearchWiki />} />
               <Route path="/tags" element={<TagList />} />
               <Route path="/forum" element={<ForumList />} />
               <Route path="/forum/:id" element={<ForumPage />} />
-              <Route path="/add-wiki" element={<AddWiki />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<Register />} />
+              <Route element={<SecurePage userData={userData} />}>
+                <Route path="/page/:id/edit" element={<EditWiki />} />
+                <Route path="/add-wiki" element={<AddWiki />} />
+              </Route>
             </Route>
           </Routes>
         </Router>

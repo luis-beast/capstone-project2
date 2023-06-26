@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import "./navbar.css";
+import UserContext from "../../userContext";
 
 const Navbar = () => {
+  const [userData, setUserData] = useContext(UserContext);
+  const handleLogout = () => {
+    setUserData({});
+    window.location.reload(false);
+  };
+
   return (
     <div className="NavbarContainer">
       <div className="NavbarLinks">
@@ -18,13 +25,21 @@ const Navbar = () => {
         </Link>
         <Link to="/forum">Forum</Link>
       </div>
-      <div className="NavbarAuth">
-        <Link className="login" to="/login">
-          Sign In
-        </Link>
-        <Link className="register" to="/register">
-          Sign Up
-        </Link>
+      <div className="navbar-auth">
+        {userData.id ? (
+          <>
+            <h3 onClick={handleLogout}>Sign Out</h3>
+          </>
+        ) : (
+          <>
+            <Link className="login" to="/login">
+              Sign In
+            </Link>
+            <Link className="register" to="/register">
+              Sign Up
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

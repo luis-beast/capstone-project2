@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Link, useNavigate } from "react-router-dom";
 import "./AddWiki.css";
 
 const AddWiki = () => {
@@ -10,6 +11,7 @@ const AddWiki = () => {
     title: "",
     body: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setUserInput({ ...userInput, [e.target.name]: e.target.value });
@@ -45,8 +47,9 @@ const AddWiki = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("Success:", data);
+        navigate(`/page/${data[0].id}`);
       });
-    setUserInput({ title: "", body: "" });
+    setUserInput("");
   };
 
   return (

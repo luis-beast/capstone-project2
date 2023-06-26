@@ -1,3 +1,9 @@
 .inn-box {
   color: white
 }
+.tag-container {
+  margin: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

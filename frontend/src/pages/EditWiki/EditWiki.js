@@ -4,10 +4,11 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./EditWiki.css";
 import useLocalStorageState from "../../useLocalStorageState.js";
+import UserContext from "../../userContext";
 
-//TODO - prevent page from loading if user is not logged in (once we add login support)
 const EditWiki = () => {
   const millisecondsToEditPage = 3600000;
+  const [userData, setUserData] = useContext(UserContext);
   const navigate = useNavigate();
   const { id } = useParams();
   const { state } = useLocation();

@@ -20,6 +20,11 @@ const Home = () => {
     navigate("/search", { state: { initialSearch: searchInput } });
   };
 
+  const handleLogout = () => {
+    setUserData({});
+    window.location.reload(false);
+  };
+
   return (
     <div className="home">
       <h1>WikiForces</h1>
@@ -33,22 +38,24 @@ const Home = () => {
         />
         <button onClick={handleClick}>Search</button>
       </div>
-      <Link to="/add-wiki">
-        <button>Add WikiPage</button>
-      </Link>
-      <Link to="/forum">
-        <button>Forums</button>
-      </Link>
-      {!userData && (
-        <div className="conditional-buttons">
-          <Link to="/login">
-            <button>Sign In</button>
-          </Link>
-          <Link to="/register">
-            <button>Sign Up</button>
-          </Link>
+      <div className="footer-container">
+        <div className="footer-links">
+          <Link to="/add-wiki">Add WikiPage</Link>
+          <Link to="/tags">Tags</Link>
+          <Link to="/forum">Forums</Link>
+          {userData.id ? (
+            <>
+              <div>{`Welcome, ${userData.first_name}!`}</div>
+              {<div onClick={handleLogout}>Sign Out</div>}
+            </>
+          ) : (
+            <div className="footer-auth">
+              <Link to="/login">Sign In</Link>
+              <Link to="/register">Sign Up</Link>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -142,11 +142,13 @@ server.get("/pages", (req, res) => {
 
 // Post pages
 // TODO - parse and insert tag data
+//TODO - parse and insert this as first entry in edit history
 server.post("/pages", (req, res) => {
   const input = req.body;
 
   knex("pages")
     .insert(input)
+    .returning("id")
     .then((data) => res.status(201).json(data))
     .catch((err) => {
       res.status(406).json({ Error: `No page was created: ${err}` });

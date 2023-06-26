@@ -6,3 +6,24 @@ h1 {
     color: rgb(0,20,75)
 }
 
+.footer-links {
+    color: white;
+    display: flex;
+    flex-direction: row;
+    gap: 7rem;
+    margin-top: 15%;
+}
+
+.footer-links a {
+    color: white
+}
+
+.footer-auth {
+    display: flex;
+    gap: 2rem;
+    color: white;
+}
+
+.footer-auth a {
+    color: white
+}
