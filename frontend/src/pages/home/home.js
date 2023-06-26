@@ -1,12 +1,15 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { BrowserRouter as Router, Link, useNavigate } from "react-router-dom";
 import { Search } from "../../components/index";
 import "./home.css";
+import UserContext from "../../userContext";
 
 const Home = () => {
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState("");
+  const [userData, setUserData] = useContext(UserContext);
+  console.log(userData);
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -33,6 +36,19 @@ const Home = () => {
       <Link to="/add-wiki">
         <button>Add WikiPage</button>
       </Link>
+      <Link to="/forum">
+        <button>Forums</button>
+      </Link>
+      {!userData && (
+        <div className="conditional-buttons">
+          <Link to="/login">
+            <button>Sign In</button>
+          </Link>
+          <Link to="/register">
+            <button>Sign Up</button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

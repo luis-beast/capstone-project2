@@ -2,16 +2,19 @@ import React, { useState, useContext } from "react";
 import "./LoginPage.css";
 import LoginForm from "./LoginForm";
 import { useNavigate } from "react-router-dom";
+import UserContext from "../../userContext";
+import useLocalStorageState from "../../useLocalStorageState";
 // an import for the context that you had
 
 const LoginPage = () => {
-  //const { isLoggedIn, setIsLoggedIn } = useContext(isLoggedInContext);
   const navigate = useNavigate();
+  const [userData, setUserData] = useContext(UserContext);
+
   // fetch to our api at /login
-  const loggedIn = async (details) => {
+  const handleLogin = async (details) => {
     console.log(details);
     try {
-      const response = await fetch("http://localhost:8081/login", {
+      const response = await fetch("http://localhost:8080/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -19,7 +22,14 @@ const LoginPage = () => {
         body: JSON.stringify(details),
       });
       const data = await response.json();
-      //setIsLoggedIn(data);
+
+      if (data[0]) {
+        console.log("Login Successful!");
+        setUserData(data[0]);
+        navigate("/");
+      } else {
+        console.log("Login Failed.");
+      }
       console.log(data);
       navigate("/");
     } catch (error) {
@@ -31,7 +41,7 @@ const LoginPage = () => {
     <div className="Wrapper">
       <div className="Content">
         <div className="Login">
-          <LoginForm Login={loggedIn} />
+          <LoginForm handleLogin={handleLogin} />
         </div>
       </div>
     </div>

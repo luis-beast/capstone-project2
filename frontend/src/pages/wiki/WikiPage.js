@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
-import LoggedInContext from "../../LoggedInContext";
+import UserContext from "../../userContext.js";
 import "./wiki.css";
 import parse from "html-react-parser";
 
@@ -8,7 +8,7 @@ const WikiPage = () => {
   const { id, edit_id } = useParams(); //If edit_id is defined, we are viewing a past version of the page.
   const [page, setPage] = useState({});
   const [loading, setLoading] = useState(true);
-  const loggedIn = useContext(LoggedInContext);
+  const [userData, setUserData] = useContext(UserContext);
   const { state } = useLocation();
   const [innovation, setInnovation] = useState(false);
   useEffect(() => {
@@ -97,18 +97,14 @@ const WikiPage = () => {
             />
           )}
           <h1>{page.title}</h1>
-          {loggedIn && (
-            <Link to={`page/${id}/edit`}>
-              <button className="edit-button">Edit</button>
-            </Link>
-          )}
           <div className="button-container">
+            {userData.id && (
+              <Link to={`/page/${id}/edit`}>
+                <button className="edit-button">Edit</button>
+              </Link>
+            )}
             <Link to={`/page/${id}/history`}>
               <button>View History</button>
-            </Link>
-            <Link to={`/page/${id}/edit`}>
-              {" "}
-              <button>Edit Page</button>
             </Link>
           </div>
           <div className="wiki-page-text">

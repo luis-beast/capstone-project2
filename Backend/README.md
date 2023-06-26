@@ -1,8 +1,8 @@
 # API Endpoints Documentation
 
-### /login (post) (started, not complete)
-- returns error message if login fails 
-- returns user information upon successful login
+### /login (post) ✅
+    - returns error message if login fails 
+    - returns user information upon successful login
 
 ### /register (get, post)
     - post to create a new user. Returns error message if username/email already exists

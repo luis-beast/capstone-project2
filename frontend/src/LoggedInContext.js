@@ -1,5 +1,5 @@
 import React from "react";
 
-const LoggedInContext = React.createContext(false);
+const userContext = React.createContext();
 
-export default LoggedInContext;
+export default userContext;

@@ -1,6 +1,6 @@
 import "./App.css";
 import { useState } from "react";
-import LoggedInContext from "./LoggedInContext";
+import UserContext from "./userContext";
 import {
   Home,
   EditHistory,
@@ -21,6 +21,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import Navbar from "./components/navbar/navbar.js";
+import useSessionStorageState from "./useSessionStorageState";
 
 function App() {
   const NavbarLayout = () => {
@@ -32,11 +33,11 @@ function App() {
     );
   };
 
-  const [loggedIn, setLoggedin] = useState(false);
+  const [userData, setUserData] = useSessionStorageState({}, "user-data");
 
   return (
     <div className="App">
-      <LoggedInContext.Provider value={loggedIn}>
+      <UserContext.Provider value={[userData, setUserData]}>
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -51,10 +52,11 @@ function App() {
               <Route path="/forum/:id" element={<ForumPage />} />
               <Route path="/add-wiki" element={<AddWiki />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<Register />} />
             </Route>
           </Routes>
         </Router>
-      </LoggedInContext.Provider>
+      </UserContext.Provider>
     </div>
   );
 }

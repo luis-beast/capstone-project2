@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import parse from "html-react-parser";
 import "./SearchWiki.css";
+import UserContext from "../../userContext";
 
 function ellipsify(str) {
   if (str.length > 10) {
@@ -38,6 +39,7 @@ const SearchWiki = () => {
   const [searchInput, setSearchInput] = useState(
     state?.initialSearch ? state.initialSearch : ""
   );
+  const [userData, setUserData] = useContext(UserContext);
 
   useEffect(() => {
     setLoading(true);
@@ -100,10 +102,14 @@ const SearchWiki = () => {
         .map((page, index) => {
           return <SearchItem page={page} key={index} />;
         })}
-      <h5>Can't find what you're looking for?</h5>
-      <Link to="/add-wiki">
-        <button className="create-button">Create Article</button>
-      </Link>
+      {userData.id && (
+        <>
+          <h5>Can't find what you're looking for?</h5>
+          <Link to="/add-wiki">
+            <button className="create-button">Create Article</button>
+          </Link>
+        </>
+      )}
     </div>
   );
 };

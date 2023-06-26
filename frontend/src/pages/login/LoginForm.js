@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 
-function LoginForm({ Login }) {
+function LoginForm({ handleLogin }) {
   const [details, setDetails] = useState({
     email: "",
     password: "",
@@ -10,7 +10,7 @@ function LoginForm({ Login }) {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    Login(details);
+    handleLogin(details);
   };
 
   return (
@@ -28,7 +28,7 @@ function LoginForm({ Login }) {
             value={details.email}
           />
         </div>
-        <div className="form-group">
+        {/* <div className="form-group">
           <label htmlFor="password">Password:</label>
           <input
             type="password"
@@ -39,7 +39,7 @@ function LoginForm({ Login }) {
             }
             value={details.pasword}
           />
-        </div>
+        </div> */}
         <input type="submit" value="LOGIN" />
         <p>
           Do not have an account? <Link to="/register">Click here!</Link>

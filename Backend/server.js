@@ -192,7 +192,7 @@ server.get("/pages/:id", (req, res) => {
 
 // Updates page
 server.put("/pages/:id", (req, res) => {
-  let { id, title, body, userId, comment, tags, lock } = req.body; //Note: tags is an array of strings, not projects
+  let { id, title, body, userId, comment, tags, lock } = req.body; //Note: tags is an array of strings
   let found = activePageLocks.find(
     (pageLock) =>
       lock.token === pageLock.token &&
@@ -387,26 +387,43 @@ server.get("/pages/:id/history/:edit_id", (req, res) => {
     });
 });
 
-// TODO
-// still
 server.post("/login", async (req, res) => {
   const { email } = req.body;
   const user = await knex
-    .from("forum_threads")
-    .select("forum_threads.id", "forum_threads.email")
+    .from("users")
+    .select("*")
     .where("email", email)
     .then((data) => {
-      // chekck to see if the response is one.
+      // check to see if there is exactly one user fitting this email.
       if (data.length > 0) {
         return res.status(201).json(data);
       } else {
-        res.status(500).json({ message: `There was an error adding ${email}` });
+        res.status(404).json({ message: `No such user with email ${email}` });
       }
     });
 });
 
 // Register
-// server.post("/register");
+server.post("/register", (req, res) => {
+  const { email, first_name, last_name } = req.body;
+  knex("users")
+    .insert({ email, first_name, last_name })
+    .returning([
+      "id",
+      "email",
+      "first_name",
+      "last_name",
+      "is_admin",
+      "password_hash",
+    ])
+    .then((userData) => {
+      return res.status(201).send(userData);
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send({ message: `Could not create user: ${err}` });
+    });
+});
 
 // Retrieves all tags
 server.get("/tags", (req, res) => {
@@ -636,6 +653,7 @@ server.get("/forum/:id/comments", (req, res) => {
       "c.body",
       "c.created_at",
       "c.updated_at",
+      "c.replies_to",
       "u.email",
       "u.last_name",
       "u.is_admin"
@@ -650,11 +668,12 @@ server.get("/forum/:id/comments", (req, res) => {
     .catch((err) => res.status(404).json({ message: `Error: ${err}` }));
 });
 
+// .select comments where replies_to is null
+//
+
 // Where would the corelation between the user that's posting. ✅context already setup to handle logged in user✅
-//TODO - handle replies
 server.post("/forum/:id/comments", (req, res) => {
   const { user_id, body, replies_to } = req.body;
-  console.log("body: ", req.body);
   let threadId = req.params.id;
   knex("forum_comments")
     .insert({ user_id: user_id, forum_id: threadId, body, replies_to })

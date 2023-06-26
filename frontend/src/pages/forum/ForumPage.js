@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Navbar } from "../../components";
 import "./forumPage.css";
+import ForumComment from "../../components/ForumComment/ForumComment";
 
 const ForumPage = () => {
   const [forumComment, setForumComment] = useState([]);
@@ -27,9 +28,8 @@ const ForumPage = () => {
     fetch(`http://localhost:8080/forum/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("forum", data);
+        console.log("forum: ", data);
         setForumName(data[0].name);
-        console.log("data.name: ", data[0].name);
       });
   };
 
@@ -40,7 +40,7 @@ const ForumPage = () => {
 
   const handleReplyChange = (e, commentId) => {
     setReplyInput({ ...replyInput, body: e.target.value });
-    console.log(e.target.value);
+    console.log("handleReplyChange: ", e.target.value);
   };
 
   const handleValidation = () => {
@@ -74,33 +74,48 @@ const ForumPage = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("Data successfully posted: ", data);
-      });
-    setUserInput({ body: "" });
+        setUserInput("");
+        window.location.reload(false);
+      })
+      .catch((err) => console.log(err));
   };
+  // options
+  // .filter to get all the null replies_to (top level comments)
+  // .
+
+  // nested forEach to go through comments
+  //// array of object. Each comment should be an object that has a nested array of replies. (array of objects?)
+  //// attach replies to the comments object
+  //// useEffect with a fetch to get all the replies.
+  ////// 1. go throught the commentsa in the .then (replies.forEach)
+  ////// 2. compare replies comment id to the id of this array and attach them (.filter)
+  ////// 3. push to the array
 
   const getForumComments = (id) => {
     fetch(`http://localhost:8080/forum/${id}/comments`)
       .then((res) => res.json())
       .then((data) => {
         console.log("forum comments: ", data);
-        setForumComment(data);
+        const condensedData = data
+          .filter((comment) => {
+            return !comment.replies_to;
+          })
+          .map((topLevelComment) => {
+            return addReplyTree(topLevelComment, data);
+          });
+        setForumComment(condensedData);
       });
   };
-  //should be refering to the comment id
-  const replyToComment = (commentId) => {
-    const init = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ body: replyInput.body, replies_to: commentId }),
-    };
-    fetch(`http://localhost:8080/forum/${id}/comments`, init)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Successfully responded to comment: ", data);
-      });
-    setReplyInput({ body: "" });
+
+  //Recursive function is needed to get ALL of the comments and replies because each comment is at the head of its own tree of replies.
+  const addReplyTree = (comment, allComments) => {
+    let allReplies = allComments.filter(
+      (potentialReply) => potentialReply.replies_to === comment.id
+    );
+    let replyTree = allReplies.map((reply) => {
+      return addReplyTree(reply, allComments);
+    });
+    return { ...comment, replyArray: replyTree };
   };
 
   useEffect(() => {
@@ -113,40 +128,23 @@ const ForumPage = () => {
         <div className="Threads">
           <h1>{forumName}</h1>
           {forumComment?.length &&
-            forumComment.map((comment, index) => {
-              return (
-                <div className="Top_Comment_id">
-                  <h1>{forumComment.name}</h1>
-                  <div key={index} className="Comment">
-                    {/* {JSON.stringify(comment)} */}
-                    {comment.id}: {comment.body}
-                    {shown == comment.id ? (
-                      <>
-                        <textarea
-                          className="reply-comment"
-                          placeholder="Enter your reply here..."
-                          name={`reply-${index}`}
-                          // value={replyInput[index] || ""}
-                          onChange={(e) => handleReplyChange(e, index)}
-                        />
-                        <button onClick={() => replyToComment(comment.id)}>
-                          Submit Comment
-                        </button>
-                      </>
-                    ) : null}
-                    <button onClick={() => setShown(comment.id)}>
-                      Reply to Comment
-                    </button>
-                    {console.log("comment.replies_to: ", comment.replies_to)}
-                    {comment.id == comment.replies_to ? (
-                      <>{comment.body}</>
-                    ) : null}
-                  </div>
-                </div>
-              );
-            })}
+            forumComment
+              .filter((comment) => !comment.replies_to)
+              .map((comment, index) => {
+                return (
+                  comment && (
+                    <div key={index} className="top-level-comment-box">
+                      <ForumComment
+                        comment={comment}
+                        offset={0}
+                        shown={shown}
+                        setShown={setShown}
+                      />
+                    </div>
+                  )
+                );
+              })}
           <hr />
-          {/* required isn't working.  */}
           {errors.body && <div className="error">{errors.body}</div>}
           <textarea
             className="New_comment"

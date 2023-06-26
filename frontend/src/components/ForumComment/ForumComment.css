@@ -1,0 +1,12 @@
+.forum-comment {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 1%;
+  border-left: solid black 2px;
+}
+
+.forum-comment .forum-comment {
+  width: 100%;
+}
+
