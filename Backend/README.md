@@ -4,7 +4,7 @@
     - returns error message if login fails 
     - returns user information upon successful login
 
-### /register (get, post)
+### /register (get, post) ✅
     - post to create a new user. Returns error message if username/email already exists
 
 ### /users/ (get, post) ✅
@@ -13,10 +13,10 @@
 ### /users/:id (get, del, put) ✅
     - admin can modify user information
 
-### /users/:id/history (get)
+### /users/:id/history (get) ✅
     - gets all of a particular users modifications to a page along with their information
 
-### /pages (get, post) 
+### /pages (get, post) ✅
     - should return a list of all pages and their corresponding tags
 
 ### /pages/:id (get, put, del) ✅
@@ -35,6 +35,9 @@
         - Requests to edit a page are only granted if the page is not locked OR if the request body contains that page's lock.a
     - DELETE removes the lock in the request body from the list of active page locks.
     - These API requests do not touch the database, the page locks are stored in memory on the API server. 
+
+### /pages/:page_id/revert/:edit_id (put) ✅
+    - admin can put a previous version of a page as the most recent version
 
 ### /pages?search=example (get)   (This is currrently being done in the front end.)
     - returns list of pages where title/body contains "example"
@@ -63,9 +66,9 @@
     - full CRUD on a specific forum
     - post creates a new comment
 
-### /forum/:id/comments (get)
+### /forum/:id/comments (get) ✅
     - returns all comments on a specific forum with user information
 
-### /forum/comment/:id (get, put, del) 
-    - get, edit, and delete a single comment
+### /forum/comment/:id (get, put) ✅
+    - get and edit a single comment
     - get returns the comments with the users information

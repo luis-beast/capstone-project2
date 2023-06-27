@@ -26,7 +26,8 @@ const SearchItem = ({ page }) => {
           <p key={tag.id}>{tag.name}</p>
         ))}
         <h4>
-          Last update: {moment.utc(page.updated_at).format("DD MMM YYYY")}
+          Last updated:{" "}
+          {moment.utc(page.updated_at).format("DD MMM YYYY hh:mm:ss")}
         </h4>
       </Link>
     </div>

@@ -6,7 +6,6 @@ const UserEdits = () => {
   const { id } = useParams();
   const { state } = useLocation();
   const [loading, setLoading] = useState(true);
-  const [currentPage, SetCurrentPage] = useState();
   const [userHistory, setUserHistory] = useState([]);
   const navigate = useNavigate();
 
@@ -16,37 +15,39 @@ const UserEdits = () => {
       .then((res) => res.json())
       .then((data) => {
         setUserHistory(data);
-        console.log("useEffect", data);
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
   }, [id]);
 
   const dataGridColums = [
-    { field: "created_at", headerName: "Created", flex: 1 },
-    { field: "updated_at", headerName: "Updated", flex: 1 },
+    { field: "title", headerName: "WikiPage", flex: 1 },
     { field: "comment", headerName: "Comment", flex: 1 },
+    { field: "updated_at", headerName: "Updated", flex: 1 },
   ];
 
   const handleRowClick = (params) => {
-    //   let title = `${params.row.created_at}::${current.title}`;
-    //   let body = params.row.body;
-    // navigate(`/users/${id}/history/${params.row.id}`, {
-    //   state: {
-    //     page: {
-    //       ...currentPage,
-    //       title: title,
-    //       body: body,
-    //       email: params.row.email,
-    //     },
-    //   },
-    // });
+    let title = params.row.title;
+    let body = params.row.body;
+    let email = params.row.email;
+    navigate(`/page/${params.row.page_id}/history/${params.row.id}`, {
+      state: {
+        page: {
+          title: title,
+          body: body,
+          email: email,
+        },
+      },
+    });
   };
-
-  //   // a page that a signed in user can view to see all the edits they've created
 
   return (
     <div className="user-history">
+      {userHistory?.length > 0 && userHistory[0].user_id && (
+        <h1>
+          {`Edit History for ${userHistory[0].first_name} ${userHistory[0].last_name}`}
+        </h1>
+      )}
       <DataGrid
         rows={userHistory}
         columns={dataGridColums}

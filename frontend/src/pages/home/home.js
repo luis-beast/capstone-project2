@@ -46,6 +46,9 @@ const Home = () => {
         </div>
         {userData.id ? (
           <>
+            <Link className="history" to={`/user/${userData.id}/history`}>
+              History
+            </Link>
             <div>{`Welcome, ${userData.first_name}!`}</div>
             {<div onClick={handleLogout}>Sign Out</div>}
           </>

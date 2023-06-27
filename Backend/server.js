@@ -11,6 +11,13 @@ server.use(cors());
 //Each edited page looks like {id: page id, token: user token, timestamp: time created}
 const activePageLocks = []; //If this app is ever deployed, this needs to be replaced with an ES6 set for faster queries.
 const millisecondsToEditPage = 3600000;
+const adminRemovePageLock = (pageId) => {
+  let indexToRemove = activePageLocks.findIndex((lock) => lock.id === page.id);
+  if (indexToRemove >= 0) {
+    activePageLocks.splice(indexToRemove, 1);
+  }
+};
+
 const removePageLock = (lockToRemove) => {
   let indexToRemove = activePageLocks.findIndex(
     (lock) =>
@@ -18,10 +25,29 @@ const removePageLock = (lockToRemove) => {
       lockToRemove.id === lock.id &&
       lockToRemove.timestamp === lock.timestamp
   );
-  console.log(indexToRemove);
   if (indexToRemove >= 0) {
     activePageLocks.splice(indexToRemove, 1);
   }
+};
+
+const revertPage = (page_id, user_id, edit_id, trx) => {
+  return trx("edit_history")
+    .where("id", edit_id)
+    .then((editHistoryData) => {
+      const body = editHistoryData[0].body;
+      const editTimestamp = editHistoryData[0].created_at;
+      let pagePromise = trx("pages").where("id", page_id).update({
+        body: body,
+      });
+
+      let editHistoryPromise = trx("edit_history").insert({
+        page_id,
+        user_id,
+        body,
+        comment: `Revert to ${editTimestamp}`,
+      });
+      return Promise.all([pagePromise, editHistoryPromise]);
+    });
 };
 
 //Do not call server.listen() in this file, see index.js
@@ -145,8 +171,6 @@ server.get("/pages", (req, res) => {
 });
 
 // Post pages
-// TODO - parse and insert tag data
-//TODO - parse and insert this as first entry in edit history
 server.post("/pages", (req, res) => {
   const { title, body, user_id, tags } = req.body;
 
@@ -327,14 +351,15 @@ server.delete("/pages/:id", (req, res) => {
     .then((data) => res.status(200).json(data))
     .catch((err) => {
       console.error(err);
-      res.status(202).json({
-        Error: `Unable to delete event: ${req.params.id}. Error: ${err}`,
+      res.status(500).json({
+        Error: `Unable to delete page with id ${req.params.id}. Error: ${err}`,
       });
     });
 });
 
 //Requests permission to edit the page, does not access database.
 server.post("/pages/:id/edit-request", (req, res) => {
+  console.log(`Request to edit page with is ${req.params.id}`);
   if (req.body && req.body.id === req.params.id) {
     const { id, token, timestamp } = req.body;
     let found = activePageLocks.find(
@@ -368,6 +393,7 @@ server.post("/pages/:id/edit-request", (req, res) => {
 server.delete("/pages/:id/edit-request", (req, res) => {
   if (req.body && req.body.id === req.params.id) {
     removePageLock(req.body);
+    console.log(`Stop editing page with id ${req.params.id}`);
     return res.status(200).send({ message: "Lock removed" });
   } else {
     return res
@@ -403,6 +429,85 @@ server.get("/pages/:id/history", (req, res) => {
     });
 });
 
+//Reverts a page back to ta specific edit id
+server.put("/pages/:page_id/revert/:edit_id", (req, res) => {
+  const { page_id, edit_id } = req.params;
+  const { user_id } = req.body;
+  knex
+    .transaction((trx) => {
+      revertPage(page_id, user_id, edit_id, trx);
+    })
+    .then(() => {
+      adminRemovePageLock(page_id);
+      return res.status(201).send({ message: "Revert complete" });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send({ message: "Internal server error" });
+    });
+});
+
+//Rolls back all of a user's transactions between two timestamps.
+//HAS NOT BEEN TESTED!
+server.put("/users/:user_id/revert", (req, res) => {
+  const { user_id } = req.params;
+  const { start_timestamp, end_timestamp, admin_id } = req.body;
+  knex("edit_history")
+    .orderBy("created_at", "desc")
+    .then((allEdits) => {
+      editsToRollback = allEdits
+        .map((edit, index) => ({ ...edit, index: index }))
+        .filter(
+          (edit) =>
+            edit.user_id === user_id &&
+            edit.created_at > start_timestamp &&
+            edit.created_at < end_timestamp
+        );
+      knex
+        .transaction((trx) => {
+          const pageIdsRolledBack = [];
+          const promiseArray = editsToRollback.map(
+            (edit, index, editsToRollback) => {
+              if (!pageIdsRolledBack.includes(edit.page_id)) {
+                adminRemovePageLock(edit.page_id);
+                let earliestEdit = editsToRollback.findLast(
+                  (endEdit) => endEdit.page_id === edit.page_id
+                );
+                let revertTarget = allEdits
+                  .slice(earliestEdit.index + 1)
+                  .find(
+                    (potentialRevert) =>
+                      potentialRevert.page_id === earliestEdit.page_id
+                  );
+                if (revertTarget) {
+                  return revertPage(
+                    earliestEdit.page_id,
+                    admin_id,
+                    revertTarget.id,
+                    trx
+                  );
+                } else {
+                  return trx("pages").where("id", earliestEdit.page_id).del();
+                }
+              } else {
+                return edit.page_id;
+              }
+            }
+          );
+
+          return Promise.all(promiseArray);
+        })
+        .then((editsDone) => {
+          return res
+            .status(200)
+            .send({ message: `Rolled back ${editsDone.length} edits` });
+        })
+        .catch((err) =>
+          res.status(500).send({ message: `Failed to revert: ${err}` })
+        );
+    });
+});
+
 // Gets all users edits
 server.get("/users/:id/history", (req, res) => {
   knex("edit_history AS e")
@@ -410,15 +515,17 @@ server.get("/users/:id/history", (req, res) => {
       "e.id",
       "e.user_id",
       "e.page_id",
+      "p.title",
       "e.body",
+      "e.comment",
       "e.created_at",
       "e.updated_at",
-      "e.comment",
       "u.email",
       "u.first_name",
       "u.last_name",
       "u.is_admin"
     )
+    .innerJoin("pages AS p", "e.page_id", "=", "p.id")
     .leftJoin("users AS u", "e.user_id", "u.id")
     .where("user_id", req.params.id)
     .orderBy("e.created_at", "desc")
@@ -715,32 +822,34 @@ server.put("/forum/:id", (req, res) => {
 });
 
 // Forum comments
-// Are these :id's supposed to be the forum:id or the comments id?
+// ids are comment ids
 server.get("/forum/comment/:id", (req, res) => {
   const input = req.params.id;
-  knex("forum_threads")
+  knex("forum_comments")
     .where("id", input)
     .then((data) => {
       if (data.length > 0) {
         res.status(200).json(data);
       } else {
-        res.status(404).json({ message: `Forum not found at id: ${input}.` });
+        res.status(404).json({ message: `Comment not found at id: ${input}.` });
       }
     });
 });
 
 server.put("/forum/comment/:id", (req, res) => {
-  const { page_id, name } = req.body;
-  let queryValue = req.params.id;
-  knex("forum_threads")
-    .where("id", queryValue)
-    .update({ page_id, name })
-    .then(() => res.status(201).json({ message: "You've updated the forum." }))
+  const { body, user_id } = req.body;
+  let id = req.params.id;
+  knex("forum_comments")
+    .where("id", id)
+    .update({ body, user_id })
+    .then(() =>
+      res.status(201).json({ message: `Updated comment with id ${id}.` })
+    )
     .catch((err) => {
       console.error(err);
       res.status(500).json({
         message:
-          "There was an error updating the forum, please try again later.",
+          "There was an error updating the comment, please try again later.",
       });
     });
 });

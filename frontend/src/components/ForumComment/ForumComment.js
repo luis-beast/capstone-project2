@@ -9,7 +9,6 @@ const ForumComment = ({ comment, offset, shown, setShown }) => {
 
   const handleReplyChange = (e) => {
     setReplyInput(e.target.value);
-    console.log(e.target.value);
   };
 
   const replyToComment = (commentId) => {
@@ -18,7 +17,11 @@ const ForumComment = ({ comment, offset, shown, setShown }) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ body: replyInput, replies_to: commentId }),
+      body: JSON.stringify({
+        body: replyInput,
+        replies_to: commentId,
+        user_id: userData.id,
+      }),
     };
     fetch(`http://localhost:8080/forum/${comment.forum_id}/comments`, init)
       .then((res) => res.json())
@@ -32,12 +35,41 @@ const ForumComment = ({ comment, offset, shown, setShown }) => {
       });
   };
 
+  const handleDelete = (e) => {
+    e.preventDefault();
+    const init = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ body: "[DELETED]", user_id: null }),
+    };
+    fetch(`http://localhost:8080/forum/comment/${comment.id}`, init)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error(`Could not delete comment with id ${comment.id}`);
+        }
+      })
+      .then((data) => {
+        window.location.reload(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     comment && (
       <div className={`forum-comment comment-level-${offset}`}>
-        {comment.id}: {comment.body}
+        <div className="comment-body">
+          <h5>{comment.email}</h5>
+          <p>{comment.body}</p>
+        </div>
         {userData.id && (
           <button onClick={() => setShown(comment.id)}>Reply to Comment</button>
+        )}
+        {(userData.id === comment.user_id || userData.is_admin) && (
+          <button onClick={handleDelete}>Delete Comment</button>
         )}
         {userData.id && shown == comment.id && (
           <>
