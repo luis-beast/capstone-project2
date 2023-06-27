@@ -15,3 +15,8 @@
     background-color: grey;
     margin: 2rem auto;
 }
+
+.search-bar span {
+    margin-left: 10px;
+    margin-right: 10px;
+}

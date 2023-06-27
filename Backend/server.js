@@ -109,6 +109,8 @@ server.get("/pages", (req, res) => {
       "p.id",
       "p.title",
       "p.body",
+      "p.updated_at",
+      "p.created_at",
       knex.raw("array_agg(t.id) as tag_ids"),
       knex.raw("array_agg(t.name) as tag_names")
     )
@@ -128,6 +130,8 @@ server.get("/pages", (req, res) => {
           title: page.title,
           body: page.body,
           tags: tagArray,
+          created_at: page.created_at,
+          updated_at: page.updated_at,
         };
       });
       res.status(200).json(sendData);
@@ -144,15 +148,58 @@ server.get("/pages", (req, res) => {
 // TODO - parse and insert tag data
 //TODO - parse and insert this as first entry in edit history
 server.post("/pages", (req, res) => {
-  const input = req.body;
+  const { title, body, user_id, tags } = req.body;
 
-  knex("pages")
-    .insert(input)
-    .returning("id")
-    .then((data) => res.status(201).json(data))
-    .catch((err) => {
-      res.status(406).json({ Error: `No page was created: ${err}` });
-    });
+  knex.transaction((trx) => {
+    return trx("pages")
+      .insert({ title, body })
+      .returning("id")
+      .then((data) => {
+        let page_id = data[0].id;
+        let editHistoryPromise = trx("edit_history")
+          .insert({ user_id, body, page_id, comment: "Page created" })
+          .returning("page_id");
+
+        let tagTransactionPromise = tags?.length
+          ? trx("tags")
+              .then((dbTags) => {
+                let tagsInsertPromiseArray = [];
+                tags.forEach((tagName) => {
+                  let foundDbTag = dbTags.find(
+                    (dbTag) => dbTag.name === tagName
+                  );
+                  if (foundDbTag) {
+                    tagsInsertPromiseArray.push({ id: foundDbTag.id });
+                  } else {
+                    tagsInsertPromiseArray.push(
+                      trx("tags").insert({ name: tagName }).returning("id")
+                    );
+                  }
+                });
+                return Promise.all(tagsInsertPromiseArray);
+              })
+              .then((tagIds) => {
+                let pageTagEntries = tagIds.map((tagId) => ({
+                  tag_id: tagId.id,
+                  page_id: page_id,
+                }));
+                return trx("page_tags").insert(pageTagEntries);
+              })
+          : "No tags";
+
+        return Promise.all([
+          page_id,
+          editHistoryPromise,
+          tagTransactionPromise,
+        ]);
+      })
+      .then((resolvedTransactions) => {
+        res.status(201).send([resolvedTransactions[0]]);
+      })
+      .catch((err) => {
+        res.status(406).json({ Error: `No page was created: ${err}` });
+      });
+  });
 });
 
 // Gets page by ID
@@ -162,6 +209,8 @@ server.get("/pages/:id", (req, res) => {
       "p.id",
       "p.title",
       "p.body",
+      "p.updated_at",
+      "p.created_at",
       knex.raw("array_agg(t.id) as tag_ids"),
       knex.raw("array_agg(t.name) as tag_names")
     )
@@ -182,6 +231,8 @@ server.get("/pages/:id", (req, res) => {
           title: page.title,
           body: page.body,
           tags: tagArray,
+          created_at: page.created_at,
+          updated_at: page.updated_at,
         };
       });
       res.status(200).json(sendData);
@@ -352,6 +403,34 @@ server.get("/pages/:id/history", (req, res) => {
     });
 });
 
+// Gets all users edits
+server.get("/users/:id/history", (req, res) => {
+  knex("edit_history AS e")
+    .select(
+      "e.id",
+      "e.user_id",
+      "e.page_id",
+      "e.body",
+      "e.created_at",
+      "e.updated_at",
+      "e.comment",
+      "u.email",
+      "u.first_name",
+      "u.last_name",
+      "u.is_admin"
+    )
+    .leftJoin("users AS u", "e.user_id", "u.id")
+    .where("user_id", req.params.id)
+    .orderBy("e.created_at", "desc")
+    .then((data) => res.status(200).json(data))
+    .catch((err) => {
+      console.error(err);
+      res.status(404).json({
+        message: `Page ${req.params.id} does not have a history. Error: ${err}`,
+      });
+    });
+});
+
 // Gets a single iteration of a page from the edit history
 server.get("/pages/:id/history/:edit_id", (req, res) => {
   knex("edit_history AS e")
@@ -372,6 +451,44 @@ server.get("/pages/:id/history/:edit_id", (req, res) => {
     .leftJoin("users AS u", "e.user_id", "u.id")
     .where("e.id", req.params.edit_id)
     .andWhere("e.page_id", req.params.id)
+    .then((data) => {
+      if (data.length === 1) {
+        res.status(200).json(data);
+      } else {
+        throw new Error(
+          `History entry ${req.params.edit_id} does not match page ${req.params.id}`
+        );
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(404).json({
+        message: `${err}`,
+      });
+    });
+});
+
+// Gets a single iteration of a users edit history
+server.get("/users/:id/history/:edit_id", (req, res) => {
+  knex("edit_history AS e")
+    .select(
+      "e.id",
+      "e.user_id",
+      "e.page_id",
+      "e.body",
+      "e.created_at",
+      "e.updated_at",
+      "e.comment",
+      "u.email",
+      "u.first_name",
+      "u.last_name",
+      "u.is_admin",
+      "p.title"
+    )
+    .innerJoin("pages AS p", "e.page_id", "=", "p.id")
+    .leftJoin("users AS u", "e.user_id", "u.id")
+    .where("e.id", req.params.edit_id)
+    .andWhere("u.id", req.params.id)
     .then((data) => {
       if (data.length === 1) {
         res.status(200).json(data);
@@ -670,9 +787,6 @@ server.get("/forum/:id/comments", (req, res) => {
     .catch((err) => res.status(404).json({ message: `Error: ${err}` }));
 });
 
-// .select comments where replies_to is null
-//
-
 // Where would the corelation between the user that's posting. ✅context already setup to handle logged in user✅
 server.post("/forum/:id/comments", (req, res) => {
   const { user_id, body, replies_to } = req.body;
@@ -705,6 +819,21 @@ server.delete("/forum/comment/:id", (req, res) => {
         message: `Unable to delete ${queryValue}, please try again later. Error: ${err}`,
       });
     });
+});
+
+// User edits
+server.get("/", (req, res) => {
+  const input = req.params.id;
+  knex("forum_threads")
+    .where("id", input)
+    .then((data) => {
+      if (data.length > 0) {
+        res.status(200).json(data);
+      } else {
+        res.status(404).json({ message: `Forum not found at id: ${input}.` });
+      }
+    })
+    .catch((err) => res.status(500).json({ message: `Error: ${err}` }));
 });
 
 module.exports = server;

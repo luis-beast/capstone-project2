@@ -43,18 +43,18 @@ const Home = () => {
           <Link to="/add-wiki">Add WikiPage</Link>
           <Link to="/tags">Tags</Link>
           <Link to="/forum">Forums</Link>
-          {userData.id ? (
-            <>
-              <div>{`Welcome, ${userData.first_name}!`}</div>
-              {<div onClick={handleLogout}>Sign Out</div>}
-            </>
-          ) : (
-            <div className="footer-auth">
-              <Link to="/login">Sign In</Link>
-              <Link to="/register">Sign Up</Link>
-            </div>
-          )}
         </div>
+        {userData.id ? (
+          <>
+            <div>{`Welcome, ${userData.first_name}!`}</div>
+            {<div onClick={handleLogout}>Sign Out</div>}
+          </>
+        ) : (
+          <div className="footer-auth">
+            <Link to="/login">Sign In</Link>
+            <Link to="/register">Sign Up</Link>
+          </div>
+        )}
       </div>
     </div>
   );

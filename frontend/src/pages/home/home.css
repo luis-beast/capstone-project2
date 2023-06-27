@@ -6,12 +6,21 @@ h1 {
     color: rgb(0,20,75)
 }
 
+.footer-container {
+    height: 90vh;
+    padding: 0.5em;
+    margin: 25vh auto 0;
+    margin-left: 1%;
+    display:flex;
+    justify-content: space-between;
+}
+
 .footer-links {
     color: white;
-    display: flex;
+    display: flex; 
     flex-direction: row;
-    gap: 7rem;
-    margin-top: 15%;
+    justify-content: space-evenly;
+    gap: 20%;
 }
 
 .footer-links a {
@@ -20,10 +29,12 @@ h1 {
 
 .footer-auth {
     display: flex;
-    gap: 2rem;
+    flex-direction: row;
+    gap: 50%;
+    justify-content: flex-end;
     color: white;
 }
 
 .footer-auth a {
-    color: white
-}
+    color: white;
+} 

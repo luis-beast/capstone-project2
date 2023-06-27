@@ -30,13 +30,13 @@
 }
 
 .wiki-input-container {
-  display: flex;
-  margin-top: 2rem;
+  background-color: white;
+  width: 80%;
+  margin: 3rem;
 }
 
 .wiki-input-title {
-  width: 400px;
-  height: 20px;
+  width: 80%;
   padding: 1rem;
   border-radius: 5px;
   border: 1px solid #ddd;
@@ -45,8 +45,6 @@
 }
 
 .wiki-input {
-  width: 400px;
-  height: 200px;
   padding: 1rem;
   border-radius: 5px;
   border: 1px solid #ddd;

@@ -28,6 +28,9 @@ const Navbar = () => {
       <div className="navbar-auth">
         {userData.id ? (
           <>
+            <Link className="history" to={`/user/${userData.id}/history`}>
+              History
+            </Link>
             <h3 onClick={handleLogout}>Sign Out</h3>
           </>
         ) : (

@@ -5,6 +5,7 @@ import "react-quill/dist/quill.snow.css";
 import "./EditWiki.css";
 import useLocalStorageState from "../../useLocalStorageState.js";
 import UserContext from "../../userContext";
+import { TagEditor } from "../../components";
 
 const EditWiki = () => {
   const millisecondsToEditPage = 3600000;
@@ -165,46 +166,30 @@ const EditWiki = () => {
             />
           </div>
           <div className="tag-container">
-            {tags.map((tag, index) => (
-              <div key={index}>
-                {tag}{" "}
-                <button className="delete-tags" onClick={() => deleteTags(tag)}>
-                  X
-                </button>
-              </div>
-            ))}
-            <div>
-              <input
-                type="text"
-                value={newTag}
-                placeholder="Add Tags Here"
-                onChange={(e) => {
-                  setNewTag(e.target.value);
-                }}
-              />
-              <button onClick={addTags} disabled={!newTag?.trim() || loading}>
-                Add Tag
-              </button>
-              <div className="button-container">
-                <input
-                  type="text"
-                  value={comment}
-                  onChange={safeSetComment}
-                  placeholder="Add a Comment Here"
-                />
-                <button
-                  onClick={saveChanges}
-                  disabled={!comment?.trim() || loading}
-                >
-                  Save Changes
-                </button>
-                <p>
-                  {comment
-                    ? `${comment.length}/255 characters`
-                    : "Comment Required"}
-                </p>
-              </div>
-            </div>
+            <TagEditor
+              currentTags={tags}
+              setCurrentTags={setTags}
+              loading={loading}
+            />
+          </div>
+          <div className="button-container">
+            <input
+              type="text"
+              value={comment}
+              onChange={safeSetComment}
+              placeholder="Add a Comment Here"
+            />
+            <button
+              onClick={saveChanges}
+              disabled={!comment?.trim() || loading}
+            >
+              Save Changes
+            </button>
+            <p>
+              {comment
+                ? `${comment.length}/255 characters`
+                : "Comment Required"}
+            </p>
           </div>
         </>
       )}

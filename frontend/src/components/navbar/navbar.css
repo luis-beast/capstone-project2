@@ -56,3 +56,8 @@ a {
 .register a {
   color: white;
 }
+
+.history,
+.history a {
+  color: white;
+}

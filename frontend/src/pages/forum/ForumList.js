@@ -18,6 +18,7 @@ const ForumList = () => {
       .then((res) => res.json())
       .then((data) => {
         setForum(data);
+        console.log("forum: ", data);
       });
   };
 
@@ -49,7 +50,7 @@ const ForumList = () => {
                 onClick={() => handleClick(line.id)}
                 key={index}
               >
-                {JSON.stringify(line.name)}
+                {JSON.stringify(line.name)} - {line.updated_at}
               </div>
             );
           })}

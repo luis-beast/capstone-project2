@@ -1,31 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { BrowserRouter as Router, Link, useNavigate } from "react-router-dom";
 import "./AddWiki.css";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import UserContext from "../../userContext";
+import { TagEditor } from "../../components";
 
 const AddWiki = () => {
-  const [userInput, setUserInput] = useState({
-    title: "",
-    body: "",
-  });
+  const [userData, setUserData] = useContext(UserContext);
+  const [body, setBody] = useState("");
+  const [title, setTitle] = useState("");
   const [errors, setErrors] = useState({
     title: "",
     body: "",
   });
+  const [tags, setTags] = useState([]);
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setUserInput({ ...userInput, [e.target.name]: e.target.value });
-  };
 
   const handleValidation = () => {
     let errors = {};
     let formIsValid = true;
-
-    if (!userInput.title) {
+    if (!title) {
       formIsValid = false;
       errors["title"] = "You must enter a title!";
     }
-
     setErrors(errors);
     return formIsValid;
   };
@@ -40,16 +38,28 @@ const AddWiki = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(userInput),
+      body: JSON.stringify({
+        body: body,
+        title: title,
+        user_id: userData.id,
+        tags: tags,
+      }),
     };
-    console.log(init.body);
     fetch("http://localhost:8080/pages", init)
-      .then((res) => res.json())
+      .then((res) => {
+        console.log("response status: ", res.status);
+        if (!res.ok) {
+          throw new Error("HTTP status: ", res.satus);
+        }
+        return res.json();
+      })
       .then((data) => {
         console.log("Success:", data);
-        navigate(`/page/${data[0].id}`);
+        navigate(`/page/${data[0]}`);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    setUserInput("");
   };
 
   return (
@@ -66,17 +76,20 @@ const AddWiki = () => {
               type="text"
               name="title"
               placeholder="Enter a title..."
-              onChange={handleChange}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          <div className="wiki-input-container">
-            <textarea
-              className="wiki-input"
-              placeholder="Enter text here..."
-              name="body"
-              onChange={handleChange}
-            />
-          </div>
+          <ReactQuill
+            className="wiki-input-container"
+            value={body}
+            onChange={(value) => {
+              setBody(value);
+            }}
+            placeholder="Text Body"
+            theme="snow"
+          />
+          <TagEditor currentTags={tags} setCurrentTags={setTags} />
           <div className="wiki-buttons-container">
             <button onClick={saveToDb}>Submit</button>
           </div>

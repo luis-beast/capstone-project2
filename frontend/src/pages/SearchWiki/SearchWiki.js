@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import parse from "html-react-parser";
 import "./SearchWiki.css";
 import UserContext from "../../userContext";
+import moment from "moment";
 
 function ellipsify(str) {
   if (str.length > 10) {
@@ -24,6 +25,9 @@ const SearchItem = ({ page }) => {
         {page.tags.map((tag) => (
           <p key={tag.id}>{tag.name}</p>
         ))}
+        <h4>
+          Last update: {moment.utc(page.updated_at).format("DD MMM YYYY")}
+        </h4>
       </Link>
     </div>
   );
@@ -40,6 +44,13 @@ const SearchWiki = () => {
     state?.initialSearch ? state.initialSearch : ""
   );
   const [userData, setUserData] = useContext(UserContext);
+  const possibleSorts = [
+    "Recently Edited",
+    "Oldest Edits",
+    "Title (A-Z)",
+    "Title (Z-A)",
+  ];
+  const [sortBy, setSortBy] = useState("Recently Edited");
 
   useEffect(() => {
     setLoading(true);
@@ -65,6 +76,47 @@ const SearchWiki = () => {
     setLoading(false);
   };
 
+  const handleSort = (e) => {
+    e.preventDefault();
+    setSortBy(e.target.value);
+  };
+
+  const pageComparator = (a, b) => {
+    if (sortBy === "Recently Edited") {
+      if (a.updated_at > b.updated_at) {
+        return -1;
+      } else if (a.updated_at === b.updated_at) {
+        return 0;
+      } else {
+        return 1;
+      }
+    } else if (sortBy === "Oldest Edits") {
+      if (a.updated_at < b.updated_at) {
+        return -1;
+      } else if (a.updated_at === b.updated_at) {
+        return 0;
+      } else {
+        return 1;
+      }
+    } else if (sortBy === "Title (A-Z)") {
+      if (a.title.toLowerCase() < b.title.toLowerCase()) {
+        return -1;
+      } else if (a.title.toLowerCase() === b.title.toLowerCase()) {
+        return 0;
+      } else {
+        return 1;
+      }
+    } else if (sortBy === "Title (Z-A)") {
+      if (a.title.toLowerCase() > b.title.toLowerCase()) {
+        return -1;
+      } else if (a.title.toLowerCase() === b.title.toLowerCase()) {
+        return 0;
+      } else {
+        return 1;
+      }
+    }
+  };
+
   const matchesSearchInput = (page, searchTerms) => {
     const termArray = searchTerms.split(" ");
     for (let i = 0; i < termArray.length; i++) {
@@ -87,18 +139,29 @@ const SearchWiki = () => {
     <div className="search-wiki-page">
       <div className="search-bar">
         <p>Search by keywords, or by tags with "tag:[tagname]"</p>
-        <input
-          type="text"
-          value={searchInput}
-          onChange={handleChange}
-          placeholder="Search"
-        />
-        <button className="search" onClick={handleSearch}>
-          Search{" "}
-        </button>
+        <span>
+          <input
+            type="text"
+            value={searchInput}
+            onChange={handleChange}
+            placeholder="Search"
+          />
+          <button className="search" onClick={handleSearch}>
+            Search{" "}
+          </button>
+        </span>
+        <span>
+          Sort By:
+          <select onChange={handleSort} value={sortBy}>
+            {possibleSorts.map((sort, index) => (
+              <option key={index}>{sort}</option>
+            ))}
+          </select>
+        </span>
       </div>
       {pageList
         .filter((page) => matchesSearchInput(page, search))
+        .sort(pageComparator)
         .map((page, index) => {
           return <SearchItem page={page} key={index} />;
         })}

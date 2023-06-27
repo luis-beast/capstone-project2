@@ -46,6 +46,8 @@ const EditHistory = () => {
     });
   };
 
+  // a page that a signed in user can view to see all the edits they've created
+
   return (
     <div className="edit-history">
       {currentPage.title && <h1>Edit History for {currentPage.title}</h1>}
