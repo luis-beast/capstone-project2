@@ -17,6 +17,40 @@ const AddWiki = () => {
   const [tags, setTags] = useState([]);
   const navigate = useNavigate();
 
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote", "code"],
+      [{ script: "sub" }, { script: "super" }],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+
+      ["code-block"],
+      ["link"],
+      ["clean"],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "code",
+    "script",
+    "list",
+    "bullet",
+    "indent",
+    "code-block",
+    "link",
+  ];
+
   const handleValidation = () => {
     let errors = {};
     let formIsValid = true;
@@ -86,6 +120,8 @@ const AddWiki = () => {
             onChange={(value) => {
               setBody(value);
             }}
+            modules={modules}
+            formats={formats}
             placeholder="Text Body"
             theme="snow"
           />

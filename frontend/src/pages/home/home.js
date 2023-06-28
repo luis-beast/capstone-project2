@@ -27,7 +27,10 @@ const Home = () => {
 
   return (
     <div className="home">
-      <h1>WikiForces</h1>
+      <h1>
+        <span>Wiki</span>
+        <span>Forces</span>
+      </h1>
       <img src="/image.png" alt="eagle" />
       <form className="search-bar" onSubmit={handleSubmit}>
         <input

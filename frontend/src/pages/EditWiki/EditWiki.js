@@ -26,15 +26,18 @@ const EditWiki = () => {
 
   const modules = {
     toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote", "code"],
+      [{ script: "sub" }, { script: "super" }],
       [
         { list: "ordered" },
         { list: "bullet" },
         { indent: "-1" },
         { indent: "+1" },
       ],
-      ["link", "image"],
+
+      ["code-block"],
+      ["link"],
       ["clean"],
     ],
   };
@@ -46,11 +49,13 @@ const EditWiki = () => {
     "underline",
     "strike",
     "blockquote",
+    "code",
+    "script",
     "list",
     "bullet",
     "indent",
+    "code-block",
     "link",
-    "image",
   ];
 
   useEffect(() => {
@@ -168,7 +173,6 @@ const EditWiki = () => {
       .finally(() => setLoading(false));
   };
 
-  //use pageIsLocked to show the user a notification that they can't edit the page.
   return (
     <div className="edit-wiki">
       {pageIsLocked ? (
@@ -186,7 +190,7 @@ const EditWiki = () => {
           <button className="cancel-edit" onClick={handleCancel}>
             Cancel Edits
           </button>
-          <div className="edit-box">
+          <div className="wiki-input-container">
             <ReactQuill
               value={editorValue}
               onChange={(value) => {

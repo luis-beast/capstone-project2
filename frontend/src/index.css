@@ -5,6 +5,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* background-color: rgb(75,75,75); */
+  background: #232526;  
+  background: -webkit-linear-gradient(to right, #414345, #232526); 
+  background: linear-gradient(to right, #414345, #232526);
+  color: #f2f2f2;
 }
 
 .App {
@@ -17,7 +22,7 @@ code {
 }
 
 img {
-  filter: drop-shadow(10px 8px 6px #B2BEB5	);
+  filter: drop-shadow(10px 0px 6px #B2BEB5	);
 }
 
 button {
