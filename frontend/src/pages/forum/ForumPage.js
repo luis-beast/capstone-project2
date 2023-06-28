@@ -129,7 +129,7 @@ const ForumPage = () => {
       <div className="Thread_container">
         <div className="Threads">
           <h1>{forumName}</h1>
-          {forumComment?.length &&
+          {!!forumComment?.length &&
             forumComment
               .filter((comment) => !comment.replies_to)
               .map((comment, index) => {

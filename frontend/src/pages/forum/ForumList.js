@@ -17,7 +17,7 @@ const ForumList = () => {
     state?.initialSearch ? state.initialSearch : ""
   );
   const [term, setTerm] = useState("");
-  const [results, setResults] = useState({});
+  const [results, setResults] = useState([]);
 
   const { id } = useParams();
   useEffect(() => {
@@ -29,7 +29,6 @@ const ForumList = () => {
       .then((res) => res.json())
       .then((data) => {
         setForum(data);
-        // console.log("forum: ", data);
       });
   };
 
@@ -48,25 +47,25 @@ const ForumList = () => {
 
   const handleChange = (e) => {
     e.preventDefault();
-    setSearchInput(e.target.value);
+    setTerm(e.target.value);
     if (e.target.value === "") {
-      setSearch("");
+      setResults([]);
     }
   };
 
   const searchForTerm = () => {
-    // console.log("forum: ", forum);
     let resultsArray = [];
     for (let i = 0; i < forum.length; ++i) {
-      // console.log("forum[i].name: ", forum[i].name);
       if (forum[i].name.toLowerCase().includes(term.toLowerCase())) {
         console.log("found a result!", forum[i].name);
         resultsArray.push(forum[i]);
       }
     }
     setResults(resultsArray);
+    if (resultsArray.length === 0) {
+      alert("no results were found");
+    }
   };
-  // Create an array to store search results. Push any results that match inside the for loop. Set the resulst state variable to this array at the end.
 
   return (
     <div className="thread-containerr">
@@ -76,7 +75,7 @@ const ForumList = () => {
           <input
             type="text"
             value={term}
-            onChange={(e) => setTerm(e.target.value)}
+            onChange={handleChange}
             placeholder="Search"
           />
           <button className="search" onClick={searchForTerm}>

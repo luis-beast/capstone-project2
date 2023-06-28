@@ -10,7 +10,7 @@ exports.up = function (knex) {
       .foreign("page_id")
       .references("pages.id")
       .onUpdate("CASCADE")
-      .onDelete("SET NULL");
+      .onDelete("CASCADE");
     table.string("name");
     table.timestamps(true, true);
   });

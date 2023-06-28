@@ -7,34 +7,51 @@ h1 {
 }
 
 .footer-container {
-    height: 90vh;
+    position: fixed;
+    bottom: 0px;
+    height: 5vh;
+    width: 100%;
     padding: 0.5em;
-    margin: 25vh auto 0;
-    margin-left: 1%;
     display:flex;
-    justify-content: space-between;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid white;
 }
 
 .footer-links {
+    width: 40%;
     color: white;
     display: flex; 
     flex-direction: row;
     justify-content: space-evenly;
-    gap: 20%;
+    gap: 10%;
 }
 
-.footer-links a {
-    color: white
+.footer-links a:hover {
+    transform: scale(1.05);
+}
+
+
+.footer-links * {
+    color: white;
+    cursor: pointer;
 }
 
 .footer-auth {
+    width: 40%;
     display: flex;
     flex-direction: row;
-    gap: 50%;
+    gap: 20%;
     justify-content: flex-end;
+    align-items: center;
     color: white;
 }
 
-.footer-auth a {
+.footer-auth a, .footer-auth h3 {
     color: white;
+    cursor: pointer;
+} 
+
+.footer-auth a:hover, .footer-auth h3:hover {
+    transform: scale(1.05);
 } 

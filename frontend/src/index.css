@@ -7,7 +7,33 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.App {
+  text-align: center;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+img {
+  filter: drop-shadow(10px 8px 6px #B2BEB5	);
+}
+
+button {
+  border: none;
+  appearance: none;
+  background: #f2f2f2;
+  margin: 3px;
+  cursor: pointer;
+}
+
+input {
+  padding: 1px;
+  border: none;
+  background: #f2f2f2;
+  padding: 12px;
+  border-radius: 10px;
+  width: 250px;
+  /* outline: none; */
 }

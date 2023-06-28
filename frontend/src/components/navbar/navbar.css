@@ -21,17 +21,27 @@ a {
   cursor:pointer;
 }
 
+.NavbarLogo:hover {
+  transform: scale(1.05);
+}
+
 .NavbarLinks {
   display: flex;
   flex-direction: row;
   align-items: start;
   color: white;
+  width: 30%;
 }
 
 .NavbarLinks a {
   padding: 1rem;
   gap: 1rem;
   color: white;
+  cursor: pointer;
+}
+
+.NavbarLinks a:hover {
+  transform: scale(1.05);
 }
 
 .navbar-auth {
@@ -41,10 +51,18 @@ a {
   padding: 1rem;
   gap: 1rem;
   color: white;
+  width: 30%;
+  justify-content: right;
+  gap: 20%;
 }
 
 .navbar-auth * {
   cursor: pointer
+}
+
+.navbar-auth *:hover {
+  cursor: pointer;
+  transform: scale(1.05);
 }
 
 .login,

@@ -16,7 +16,7 @@ const Home = () => {
     setSearchInput(e.target.value);
   };
 
-  const handleClick = (e) => {
+  const handleSubmit = (e) => {
     navigate("/search", { state: { initialSearch: searchInput } });
   };
 
@@ -29,35 +29,37 @@ const Home = () => {
     <div className="home">
       <h1>WikiForces</h1>
       <img src="/image.png" alt="eagle" />
-      <div className="search-bar">
+      <form className="search-bar" onSubmit={handleSubmit}>
         <input
           type="search"
           placeholder="Search for a wikipage..."
           onChange={handleChange}
           value={searchInput}
         />
-        <button onClick={handleClick}>Search</button>
-      </div>
+        <button type="submit">Search</button>
+      </form>
       <div className="footer-container">
         <div className="footer-links">
           <Link to="/add-wiki">Add WikiPage</Link>
           <Link to="/tags">Tags</Link>
           <Link to="/forum">Forums</Link>
         </div>
-        {userData.id ? (
-          <>
-            <Link className="history" to={`/user/${userData.id}/history`}>
-              History
-            </Link>
-            <div>{`Welcome, ${userData.first_name}!`}</div>
-            {<div onClick={handleLogout}>Sign Out</div>}
-          </>
-        ) : (
-          <div className="footer-auth">
-            <Link to="/login">Sign In</Link>
-            <Link to="/register">Sign Up</Link>
-          </div>
-        )}
+        <div className="footer-auth">
+          {userData.id ? (
+            <>
+              <Link className="history" to={`/user/${userData.id}/history`}>
+                History
+              </Link>
+              <div>{`Welcome, ${userData.first_name}!`}</div>
+              {<h3 onClick={handleLogout}>Sign Out</h3>}
+            </>
+          ) : (
+            <>
+              <Link to="/login">Sign In</Link>
+              <Link to="/register">Sign Up</Link>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

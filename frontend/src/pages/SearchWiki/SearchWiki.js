@@ -128,7 +128,12 @@ const SearchWiki = () => {
           return false;
         }
       } else {
-        if (!(page.title.includes(term) || page.body?.includes(term))) {
+        if (
+          !(
+            page.title.toLowerCase().includes(term.toLowerCase()) ||
+            page.body?.toLowerCase()?.includes(term.toLowerCase())
+          )
+        ) {
           return false;
         }
       }
@@ -140,17 +145,17 @@ const SearchWiki = () => {
     <div className="search-wiki-page">
       <div className="search-bar">
         <p>Search by keywords, or by tags with "tag:[tagname]"</p>
-        <span>
+        <form onSubmit={handleSearch}>
           <input
             type="text"
             value={searchInput}
             onChange={handleChange}
             placeholder="Search"
           />
-          <button className="search" onClick={handleSearch}>
+          <button type="submit" className="search-button">
             Search{" "}
           </button>
-        </span>
+        </form>
         <span>
           Sort By:
           <select onChange={handleSort} value={sortBy}>

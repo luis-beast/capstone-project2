@@ -7,6 +7,8 @@ import useLocalStorageState from "../../useLocalStorageState.js";
 import UserContext from "../../userContext";
 import { TagEditor } from "../../components";
 
+//TODO - See if you can add external images to articles using Quill.
+
 const EditWiki = () => {
   const millisecondsToEditPage = 3600000;
   const [userData, setUserData] = useContext(UserContext);
@@ -21,6 +23,35 @@ const EditWiki = () => {
   const [newTag, setNewTag] = useState("");
   const [pageLock, setPageLock] = useLocalStorageState({}, `page${id}lock`);
   const [pageIsLocked, setPageIsLocked] = useState(false);
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      ["link", "image"],
+      ["clean"],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+  ];
 
   useEffect(() => {
     if (
@@ -161,6 +192,8 @@ const EditWiki = () => {
               onChange={(value) => {
                 setEditorValue(value);
               }}
+              modules={modules}
+              formats={formats}
               placeholder="Text Body"
               theme="snow"
             />

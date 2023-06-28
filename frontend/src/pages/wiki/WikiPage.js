@@ -20,15 +20,19 @@ const WikiPage = () => {
       setPage(state.page);
     } else if (edit_id) {
       fetch(`http://localhost:8080/pages/${id}/history/${edit_id}`)
-        .then((res) => res.json()) //TODO - handle 404s, throw errors if page not found
-        .then((data) => {
-          if (data.length) {
-            let title = `${data[0]?.created_at}::${data[0]?.title}`;
-            setPage({ ...data[0], title: title });
-            checkInnovation(data[0]);
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          } else if (res.status === 404) {
+            throw new Error(`Edit ${edit_id} for page with id ${id} not found`);
           } else {
-            throw new Error(data.message);
+            throw new Error(`Error ${res.status}`);
           }
+        })
+        .then((data) => {
+          let title = `${data[0]?.created_at}::${data[0]?.title}`;
+          setPage({ ...data[0], title: title });
+          checkInnovation(data[0]);
         })
         .catch((err) => console.log(err))
         .finally(() => setLoading(false));
@@ -163,6 +167,11 @@ const WikiPage = () => {
             <Link to={`/page/${id}/history`}>
               <button>View History</button>
             </Link>
+            {!!page.forum_ids?.length && (
+              <Link to={`/forum/${page.forum_ids[0]}`}>
+                <button>Discuss</button>
+              </Link>
+            )}
           </div>
           <div className="wiki-page-text">
             <article>{parse(page.body)}</article>

@@ -137,9 +137,11 @@ server.get("/pages", (req, res) => {
       "p.body",
       "p.updated_at",
       "p.created_at",
+      knex.raw("array_agg(f.id) as forum_ids "),
       knex.raw("array_agg(t.id) as tag_ids"),
       knex.raw("array_agg(t.name) as tag_names")
     )
+    .leftJoin("forum_threads as f", "p.id", "f.page_id")
     .leftJoin("page_tags AS pt", "p.id", "pt.page_id")
     .leftJoin("tags AS t", "pt.tag_id", "t.id")
     .groupBy("p.id")
@@ -156,6 +158,7 @@ server.get("/pages", (req, res) => {
           title: page.title,
           body: page.body,
           tags: tagArray,
+          forum_ids: page.forum_ids,
           created_at: page.created_at,
           updated_at: page.updated_at,
         };
@@ -183,6 +186,11 @@ server.post("/pages", (req, res) => {
         let editHistoryPromise = trx("edit_history")
           .insert({ user_id, body, page_id, comment: "Page created" })
           .returning("page_id");
+
+        let forumPromise = trx("forum_threads").insert({
+          page_id: page_id,
+          name: title,
+        });
 
         let tagTransactionPromise = tags?.length
           ? trx("tags")
@@ -214,6 +222,7 @@ server.post("/pages", (req, res) => {
         return Promise.all([
           page_id,
           editHistoryPromise,
+          forumPromise,
           tagTransactionPromise,
         ]);
       })
@@ -235,9 +244,11 @@ server.get("/pages/:id", (req, res) => {
       "p.body",
       "p.updated_at",
       "p.created_at",
+      knex.raw("array_agg(f.id) as forum_ids "),
       knex.raw("array_agg(t.id) as tag_ids"),
       knex.raw("array_agg(t.name) as tag_names")
     )
+    .leftJoin("forum_threads as f", "p.id", "f.page_id")
     .leftJoin("page_tags AS pt", "p.id", "pt.page_id")
     .leftJoin("tags AS t", "pt.tag_id", "t.id")
     .where("p.id", req.params.id)
@@ -255,6 +266,7 @@ server.get("/pages/:id", (req, res) => {
           title: page.title,
           body: page.body,
           tags: tagArray,
+          forum_ids: page.forum_ids,
           created_at: page.created_at,
           updated_at: page.updated_at,
         };
@@ -669,23 +681,6 @@ server.get("/tags", (req, res) => {
       console.error(err);
       res.status(404).json({ Error: `There was an error retrieving tags` });
     });
-});
-
-// Searches tags and returns results -- TODO
-server.get("/tags", (req, res) => {
-  let response = [];
-
-  knex("tags").then((data) => {
-    data.filter((tag) => {
-      if (tag.name === req.query.name) {
-        console.log("tag.name: ", tag.name);
-        console.log(req.query.name);
-        console.log("adding to tags response array");
-        response.push(tag);
-      }
-    });
-    res.json(response);
-  });
 });
 
 // Retrieves tag by id
