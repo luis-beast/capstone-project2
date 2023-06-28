@@ -7,3 +7,7 @@
   flex-direction: row;
   justify-content: center;
 }
+
+.tag-container * {
+  margin: 5px;
+}

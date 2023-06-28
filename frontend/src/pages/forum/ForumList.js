@@ -8,7 +8,7 @@ const ForumList = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [forum, setForum] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [forumId, setForumId] = useState([]);
   const [search, setSearch] = useState(
     state?.initialSearch ? state.initialSearch : ""
@@ -16,6 +16,8 @@ const ForumList = () => {
   const [searchInput, setSearchInput] = useState(
     state?.initialSearch ? state.initialSearch : ""
   );
+  const [term, setTerm] = useState("");
+  const [results, setResults] = useState({});
 
   const { id } = useParams();
   useEffect(() => {
@@ -27,7 +29,7 @@ const ForumList = () => {
       .then((res) => res.json())
       .then((data) => {
         setForum(data);
-        console.log("forum: ", data);
+        // console.log("forum: ", data);
       });
   };
 
@@ -52,45 +54,19 @@ const ForumList = () => {
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setSearch(searchInput);
-    setLoading(false);
-  };
-
-  //TODO - edit this function to check if a forum matches the search input.
-  const matchesSearchInput = (page, searchTerms) => {
-    console.log("page: ", page);
-    const termArray = searchTerms.split(" ");
-    for (let i = 0; i < termArray.length; i++) {
-      let term = termArray[i];
-      console.log("term: ", term);
-
-      // if (page.name.find((name) => page.name === searchTitle)) {
-      //   return false;
-      // } else {
-      //   if (!page.name.includes(term)) {
-      //     return false;
-      //   }
-      // }
+  const searchForTerm = () => {
+    // console.log("forum: ", forum);
+    let resultsArray = [];
+    for (let i = 0; i < forum.length; ++i) {
+      // console.log("forum[i].name: ", forum[i].name);
+      if (forum[i].name.toLowerCase().includes(term.toLowerCase())) {
+        console.log("found a result!", forum[i].name);
+        resultsArray.push(forum[i]);
+      }
     }
-    return true;
+    setResults(resultsArray);
   };
-
-  const SearchItem = ({ forumPage }) => {
-    const stringBody = forumPage.body.replace(/<\/?[^>]+(>|$)/g, "");
-
-    return (
-      <div className="forum" onClick={() => handleClick(forumPage.id)}>
-        <h1>{forumPage.name}</h1>
-        <p>
-          Last updated @{" "}
-          {moment.utc(forumPage.updated_at).format("DD MMM YYYY hh:mm:ss")}
-        </p>
-      </div>
-    );
-  };
+  // Create an array to store search results. Push any results that match inside the for loop. Set the resulst state variable to this array at the end.
 
   return (
     <div className="thread-containerr">
@@ -99,48 +75,46 @@ const ForumList = () => {
         <span>
           <input
             type="text"
-            value={searchInput}
-            onChange={handleChange}
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
             placeholder="Search"
           />
-          <button className="search" onClick={handleSearch}>
+          <button className="search" onClick={searchForTerm}>
             Search{" "}
           </button>
         </span>
       </div>
       <div className="threads">
-        {forum.length > 0 &&
-          forum.map((line, index) => {
-            return (
+        {results.length
+          ? results.map((res, index) => (
               <div
                 className="forum"
-                onClick={() => handleClick(line.id)}
+                onClick={() => handleClick(res.id)}
                 key={index}
               >
-                <h1>{line.name}</h1>
+                <h1>{res.name}</h1>
                 <p>
                   Last updated @{" "}
-                  {moment.utc(line.updated_at).format("DD MMM YYYY hh:mm:ss")}
+                  {moment.utc(res.updated_at).format("DD MMM YYYY hh:mm:ss")}
                 </p>
-                <>
-                  {/* {forum
-                    .filter((forumPage) =>
-                      matchesSearchInput(forumPage, search)
-                    )
-                    .map((forumPage, index) => {
-                      return;
-                    })} */}
-                </>
               </div>
-            );
-            {
-              forum
-                .filter((forumPage) => matchesSearchInput(forumPage, search))
-                .map((forumPage, index) => {
-                  return <SearchItem forumPage={forumPage} key={index} />;
-                });
-            }
-          })}
+            ))
+          : forum.length > 0 &&
+            forum.map((line, index) => {
+              return (
+                <div
+                  className="forum"
+                  onClick={() => handleClick(line.id)}
+                  key={index}
+                >
+                  <h1>{line.name.toLowerCase()}</h1>
+                  <p>
+                    Last updated @{" "}
+                    {moment.utc(line.updated_at).format("DD MMM YYYY hh:mm:ss")}
+                  </p>
+                </div>
+              );
+            })}
       </div>
     </div>
   );

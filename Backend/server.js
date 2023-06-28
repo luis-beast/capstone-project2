@@ -435,7 +435,7 @@ server.put("/pages/:page_id/revert/:edit_id", (req, res) => {
   const { user_id } = req.body;
   knex
     .transaction((trx) => {
-      revertPage(page_id, user_id, edit_id, trx);
+      return revertPage(page_id, user_id, edit_id, trx);
     })
     .then(() => {
       adminRemovePageLock(page_id);
@@ -447,28 +447,33 @@ server.put("/pages/:page_id/revert/:edit_id", (req, res) => {
     });
 });
 
-//Rolls back all of a user's transactions between two timestamps.
-//HAS NOT BEEN TESTED!
+//Rolls back all of a user's transactions between two timestamps. (inclusive)
 server.put("/users/:user_id/revert", (req, res) => {
   const { user_id } = req.params;
   const { start_timestamp, end_timestamp, admin_id } = req.body;
   knex("edit_history")
+    .where("created_at", "<=", end_timestamp)
     .orderBy("created_at", "desc")
     .then((allEdits) => {
       editsToRollback = allEdits
         .map((edit, index) => ({ ...edit, index: index }))
-        .filter(
-          (edit) =>
-            edit.user_id === user_id &&
-            edit.created_at > start_timestamp &&
-            edit.created_at < end_timestamp
-        );
+        .filter((edit) => {
+          return (
+            edit.user_id == user_id &&
+            edit.created_at.toISOString() >= start_timestamp &&
+            edit.created_at.toISOString() <= end_timestamp
+          );
+        });
       knex
         .transaction((trx) => {
           const pageIdsRolledBack = [];
-          const promiseArray = editsToRollback.map(
+          const revertPromiseArray = editsToRollback.map(
             (edit, index, editsToRollback) => {
+              let deleteEntryPromise = trx("edit_history")
+                .where("id", edit.id)
+                .del();
               if (!pageIdsRolledBack.includes(edit.page_id)) {
+                pageIdsRolledBack.push(edit.page_id);
                 adminRemovePageLock(edit.page_id);
                 let earliestEdit = editsToRollback.findLast(
                   (endEdit) => endEdit.page_id === edit.page_id
@@ -480,22 +485,27 @@ server.put("/users/:user_id/revert", (req, res) => {
                       potentialRevert.page_id === earliestEdit.page_id
                   );
                 if (revertTarget) {
-                  return revertPage(
-                    earliestEdit.page_id,
-                    admin_id,
-                    revertTarget.id,
-                    trx
-                  );
+                  return Promise.all([
+                    revertPage(
+                      earliestEdit.page_id,
+                      admin_id,
+                      revertTarget.id,
+                      trx
+                    ),
+                    deleteEntryPromise,
+                  ]);
                 } else {
-                  return trx("pages").where("id", earliestEdit.page_id).del();
+                  return Promise.all([
+                    trx("pages").where("id", earliestEdit.page_id).del(),
+                    deleteEntryPromise,
+                  ]);
                 }
               } else {
-                return edit.page_id;
+                return deleteEntryPromise;
               }
             }
           );
-
-          return Promise.all(promiseArray);
+          return Promise.all([...revertPromiseArray]);
         })
         .then((editsDone) => {
           return res

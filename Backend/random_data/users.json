@@ -1,7 +1,7 @@
 [{"first_name":"Maximilian","last_name":"Goof","email":"mgoof0@blogs.com","is_admin":false,"password_hash":"zP8<QzVSh"},
 {"first_name":"Lisa","last_name":"Simspon","email":"lsimpson3@noaa.gov","is_admin":true,"password_hash":"tG4!M!1Nz"},
 {"first_name":"John","last_name":"Stewart","email":"jstewart2@behance.net","is_admin":true,"password_hash":"fN9/'>m"},
-{"first_name":"Sheldon","last_name":"Cooper","email":"scooper1@email.com","is_admin":true,"password_hash":"qL2)XQ"},
+{"first_name":"Sheldon","last_name":"Cooper","email":"scooper1@gmail.com","is_admin":true,"password_hash":"qL2)XQ"},
 {"first_name":"Ivan","last_name":"Vasilyevich","email":"ivasilyevich@addtoany.com","is_admin":true,"password_hash":"sI9~8*fNRT"},
 {"first_name":"Luke","last_name":"Perez","email":"lukeperez5@bluehost.com","is_admin":false,"password_hash":"fZ8~(rg|8bI"},
 {"first_name":"Luis","last_name":"McManus","email":"lmcmanus6@sbwire.com","is_admin":false,"password_hash":"sF9?oti8)"},

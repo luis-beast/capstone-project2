@@ -92,7 +92,7 @@ const EditWiki = () => {
     fetch(`http://localhost:8080/pages/${id}/edit-request`, init)
       .catch((err) => console.log(err))
       .finally(() => {
-        navigate(`/page/${id}`);
+        navigate(`/page/${id}`, { replace: true });
       });
   };
 
