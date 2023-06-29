@@ -4,6 +4,12 @@
     gap: 3rem;
 } */
 
+.search-item .page-title, .search-item .tag-names  {
+    -webkit-text-stroke: 1px lightskyblue;
+}
+
+
+
 .search-item {
     display: flex;
     flex-direction: column;
@@ -14,6 +20,11 @@
     width: 50%;
     background-color: grey;
     margin: 2rem auto;
+    color: white;
+}
+
+.search-item a {
+    color: white;
 }
 
 .search-bar span {

@@ -102,7 +102,7 @@ const UserEdits = () => {
       )}
       {userData.is_admin && (
         <div className="revert-panel">
-          <button onClick={handleRollbackModeClick}>
+          <button className="danger" onClick={handleRollbackModeClick}>
             {rollbackMode ? "Cancel Rollback" : "Roll back user edits"}
           </button>
           {rollbackMode && (
@@ -133,6 +133,7 @@ const UserEdits = () => {
         </div>
       )}
       <DataGrid
+        sx={{ color: "white" }}
         rows={userHistory}
         columns={dataGridColums}
         disableRowSelectionOnClick

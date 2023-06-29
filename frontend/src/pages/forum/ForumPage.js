@@ -4,6 +4,7 @@ import { Navbar } from "../../components";
 import "./forumPage.css";
 import ForumComment from "../../components/ForumComment/ForumComment";
 import UserContext from "../../userContext";
+import ReactQuill from "react-quill";
 
 const ForumPage = () => {
   const [forumComment, setForumComment] = useState([]);
@@ -11,16 +12,48 @@ const ForumPage = () => {
   const [userInput, setUserInput] = useState({
     body: "",
   });
-  const [replyInput, setReplyInput] = useState({
-    body: "",
-    replies_to: "",
-  });
+  const [showEditor, setShowEditor] = useState(false);
+  const [editorValue, setEditorValue] = useState("");
   const [forumName, setForumName] = useState("");
   const [errors, setErrors] = useState({
     body: "",
   });
   const [shown, setShown] = useState(-1);
   const [userData, setUserData] = useContext(UserContext);
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote", "code"],
+      [{ script: "sub" }, { script: "super" }],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+
+      ["code-block"],
+      ["link"],
+      ["clean"],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "code",
+    "script",
+    "list",
+    "bullet",
+    "indent",
+    "code-block",
+    "link",
+  ];
 
   useEffect(() => {
     getForumName(id);
@@ -41,8 +74,7 @@ const ForumPage = () => {
   };
 
   const handleReplyChange = (e, commentId) => {
-    setReplyInput({ ...replyInput, body: e.target.value });
-    console.log("handleReplyChange: ", e.target.value);
+    setEditorValue(e.target.value);
   };
 
   const handleValidation = () => {
@@ -81,17 +113,6 @@ const ForumPage = () => {
       })
       .catch((err) => console.log(err));
   };
-  // options
-  // .filter to get all the null replies_to (top level comments)
-  // .
-
-  // nested forEach to go through comments
-  //// array of object. Each comment should be an object that has a nested array of replies. (array of objects?)
-  //// attach replies to the comments object
-  //// useEffect with a fetch to get all the replies.
-  ////// 1. go throught the commentsa in the .then (replies.forEach)
-  ////// 2. compare replies comment id to the id of this array and attach them (.filter)
-  ////// 3. push to the array
 
   const getForumComments = (id) => {
     fetch(`http://localhost:8080/forum/${id}/comments`)
@@ -126,9 +147,34 @@ const ForumPage = () => {
 
   return (
     <div className="Wrapper">
-      <div className="Thread_container">
-        <div className="Threads">
-          <h1>{forumName}</h1>
+      <div className="forum-page">
+        <h1>{forumName}</h1>
+        {userData.id && (
+          <div className="top-level-reply">
+            <button
+              className={`${showEditor ? "danger" : ""}`}
+              onClick={() => setShowEditor(!showEditor)}
+            >
+              {showEditor ? "Cancel Comment" : "Add Comment"}
+            </button>
+            {showEditor && (
+              <div className="comment-editor">
+                <ReactQuill
+                  value={editorValue}
+                  onChange={(value) => {
+                    setEditorValue(value);
+                  }}
+                  modules={modules}
+                  formats={formats}
+                  placeholder="Text Body"
+                  theme="snow"
+                />
+                <button onClick={() => saveToDb(id)}>Post Comment</button>
+              </div>
+            )}
+          </div>
+        )}
+        <div className="threads-container">
           {!!forumComment?.length &&
             forumComment
               .filter((comment) => !comment.replies_to)
@@ -148,21 +194,6 @@ const ForumPage = () => {
               })}
           <hr />
           {errors.body && <div className="error">{errors.body}</div>}
-          {userData.id && (
-            <>
-              {" "}
-              <textarea
-                className="New_comment"
-                placeholder="Enter text here..."
-                name="body"
-                required
-                value={userInput.body}
-                onChange={handleChange}
-              />
-              <button onClick={() => saveToDb(id)}>Comment</button>
-              <div className="Thread_comments"></div>
-            </>
-          )}
         </div>
       </div>
     </div>

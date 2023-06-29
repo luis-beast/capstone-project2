@@ -1,0 +1,23 @@
+.form-portion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    font-weight: 400;
+}
+
+.form-title {
+    -webkit-text-stroke: 1.5px blue;
+}
+
+ .form-input-label {
+    position: relative;
+    margin-right: 225px;
+    display: flex;
+    font-size: 12px;
+    justify-content: center;
+}
+
+.form-footer {
+    font-size: 16px;
+}

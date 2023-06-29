@@ -1,12 +1,31 @@
 .forum-comment {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding-left: 1%;
-  border-left: solid black 2px;
+  padding-left: 0.5%;
+  padding-right: 0.5%;
+  text-align: left;
 }
 
 .forum-comment .forum-comment {
-  width: 100%;
+  margin-left: 0.5%;
+  padding-top: 1px;
+  margin-bottom: 1px;
+  width: 98%;
+  border-left: solid black 4px;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
+
+.forum-comment button {
+  font-size: 13px;
+  width: fit-content;
+}
+
+.comment-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.admin-label {
+  color: greenyellow;
+}
+
 

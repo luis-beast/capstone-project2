@@ -101,7 +101,7 @@ const AddWiki = () => {
       <div className="Content">
         <div className="wiki-container">
           <div className="wiki-header">
-            <h1 className="wiki-header">Enter your new WikiPage here</h1>
+            <h1 className="wiki-header">Create Wiki Page</h1>
           </div>
           <div className="wiki-title-cointainer">
             {errors.title && <div className="error">{errors.title}</div>}

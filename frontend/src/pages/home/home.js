@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Link, useNavigate } from "react-router-dom";
 import { Search } from "../../components/index";
 import "./home.css";
 import UserContext from "../../userContext";
+import { BiSearch } from "react-icons/bi";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -39,7 +40,9 @@ const Home = () => {
           onChange={handleChange}
           value={searchInput}
         />
-        <button type="submit">Search</button>
+        <button type="submit" className="search-icon">
+          <BiSearch /> Search
+        </button>
       </form>
       <div className="footer-container">
         <div className="footer-links">

@@ -2,13 +2,15 @@ import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import "./ForumComment.css";
 import UserContext from "../../userContext";
+import ReactQuill from "react-quill";
+import parse from "html-react-parser";
 
 const ForumComment = ({ comment, offset, shown, setShown }) => {
-  const [replyInput, setReplyInput] = useState("");
+  const [editorValue, setEditorValue] = useState("");
   const [userData, setUserData] = useContext(UserContext);
 
   const handleReplyChange = (e) => {
-    setReplyInput(e.target.value);
+    setEditorValue(e.target.value);
   };
 
   const replyToComment = (commentId) => {
@@ -18,7 +20,7 @@ const ForumComment = ({ comment, offset, shown, setShown }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        body: replyInput,
+        body: editorValue,
         replies_to: commentId,
         user_id: userData.id,
       }),
@@ -29,7 +31,7 @@ const ForumComment = ({ comment, offset, shown, setShown }) => {
         console.log("Successfully responded to comment: ", data);
       })
       .finally(() => {
-        setReplyInput("");
+        setEditorValue("");
         setShown(-1);
         window.location.reload(false);
       });
@@ -58,32 +60,78 @@ const ForumComment = ({ comment, offset, shown, setShown }) => {
       .catch((err) => console.log(err));
   };
 
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote", "code"],
+      [{ script: "sub" }, { script: "super" }],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+
+      ["code-block"],
+      ["link"],
+      ["clean"],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "code",
+    "script",
+    "list",
+    "bullet",
+    "indent",
+    "code-block",
+    "link",
+  ];
+
   return (
     comment && (
       <div className={`forum-comment comment-level-${offset}`}>
         <div className="comment-body">
-          <h5>{comment.email}</h5>
-          <p>{comment.body}</p>
+          <div className="comment-header">
+            <h5>{comment.email}</h5>
+            {comment.is_admin && <h5 className="admin-label">ADMIN</h5>}
+          </div>
+          <p>{parse(comment.body)}</p>
         </div>
         {userData.id && (
-          <button onClick={() => setShown(comment.id)}>Reply to Comment</button>
+          <button
+            onClick={() => setShown(shown === comment.id ? -1 : comment.id)}
+          >
+            {shown === comment.id ? "Cancel Reply" : "Reply to Comment"}
+          </button>
         )}
         {(userData.id === comment.user_id || userData.is_admin) && (
-          <button onClick={handleDelete}>Delete Comment</button>
+          <button className="danger" onClick={handleDelete}>
+            Delete Comment
+          </button>
         )}
         {userData.id && shown == comment.id && (
-          <>
-            <textarea
-              className="reply-comment"
-              placeholder="Enter your reply here..."
-              name={`reply-${comment.id}`}
-              value={replyInput}
-              onChange={(e) => handleReplyChange(e)}
+          <div className="reply-text-editor">
+            <ReactQuill
+              value={editorValue}
+              onChange={(value) => {
+                setEditorValue(value);
+              }}
+              modules={modules}
+              formats={formats}
+              placeholder="Text Body"
+              theme="snow"
             />
             <button onClick={() => replyToComment(comment.id)}>
               Submit Comment
             </button>
-          </>
+          </div>
         )}
         {comment.replyArray?.length >= 0 &&
           comment.replyArray.map((reply, index) => {

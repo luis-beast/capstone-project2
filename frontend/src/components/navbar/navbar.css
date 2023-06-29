@@ -6,7 +6,7 @@
   flex-direction: row;
   justify-content: space-between;
   /* background: linear-gradient(180deg, #1b2735 0%, #090a0f 100%); */
-  margin-bottom: 50px;
+  margin-bottom: 5px;
   border-bottom: 1px solid #fff;
 }
 
@@ -19,6 +19,7 @@ a {
   margin-left: 10px;
   width: 45px;
   cursor:pointer;
+  filter: drop-shadow(1px 1px 1px #B2BEB5);
 }
 
 .NavbarLogo:hover {

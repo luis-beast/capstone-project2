@@ -187,7 +187,7 @@ const EditWiki = () => {
       ) : (
         <>
           <h1>{page.title}</h1>
-          <button className="cancel-edit" onClick={handleCancel}>
+          <button className="delete cancel-edit" onClick={handleCancel}>
             Cancel Edits
           </button>
           <div className="wiki-input-container">

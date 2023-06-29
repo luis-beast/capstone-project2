@@ -28,7 +28,9 @@
     - results are sorted in descending order of creation date - most recent edit is at the top
 
 ### /pages/:page_id/history/:edit_id ✅
-    - returns specific version of a particular page
+    - returns specific version of a particular pages
+
+
 
 ### /pages/:id/edit-request (post, delete) ✅
     - POST checks if anyone else is currently editing the page and returns a lock {id, token, timestamp} if nobody else is. 
@@ -39,21 +41,8 @@
 ### /pages/:page_id/revert/:edit_id (put) ✅
     - admin can put a previous version of a page as the most recent version
 
-### /pages?search=example (get)   (This is currrently being done in the front end.)
-    - returns list of pages where title/body contains "example"
-
-### /pages?tag=example (get)      (This is currently being done in the front end.)
-    - returns all pages that have a tag of "example"
-
-### /pages?tag=example&search=example&inclusive=true    (This is currently being done in the front end.)
-    - returns all pages that have either the tag or the text "example"
-    - if inclusive is false, it returns all pages that have both the tag and the text "example"
-
 ### /tags (get, post) ✅
     - get lists all the tags
-
-### /tags?search=example (get)   (This is currently being done in the front end.)
-    - retuns a list of tages with text of "example"
 
 ### /tags/:id (get, put, del) ✅
     - get, update, or delete a specific tag

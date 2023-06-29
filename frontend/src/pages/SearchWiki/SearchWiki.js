@@ -4,6 +4,7 @@ import parse from "html-react-parser";
 import "./SearchWiki.css";
 import UserContext from "../../userContext";
 import moment from "moment";
+import { BiSearch } from "react-icons/bi";
 
 function ellipsify(str) {
   if (str.length > 10) {
@@ -19,14 +20,14 @@ const SearchItem = ({ page }) => {
   return (
     <div className="search-item">
       <Link to={`/page/${page.id}`} state={{ page: page }}>
-        <h2>{page.title}</h2>
+        <h2 className="page-title">{page.title}</h2>
         <p>{ellipsify(`${stringBody}`)}</p>
-        <h3>Tags</h3>
+        <h3 className="tag-names">Tags</h3>
         {page.tags.map((tag) => (
           <p key={tag.id}>{tag.name}</p>
         ))}
         <h4>
-          Last updated:{" "}
+          Last updated @{" "}
           {moment.utc(page.updated_at).format("DD MMM YYYY hh:mm:ss")}
         </h4>
       </Link>
@@ -144,7 +145,8 @@ const SearchWiki = () => {
   return (
     <div className="search-wiki-page">
       <div className="search-bar">
-        <p>Search by keywords, or by tags with "tag:[tagname]"</p>
+        <h1>Search by keywords</h1>
+        <h3>Search for a tag with tag:tagname</h3>
         <form onSubmit={handleSearch}>
           <input
             type="text"
@@ -153,14 +155,16 @@ const SearchWiki = () => {
             placeholder="Search"
           />
           <button type="submit" className="search-button">
-            Search{" "}
+            <BiSearch /> Search{" "}
           </button>
         </form>
         <span>
           Sort By:
           <select onChange={handleSort} value={sortBy}>
             {possibleSorts.map((sort, index) => (
-              <option key={index}>{sort}</option>
+              <option className="dropdown" key={index}>
+                {sort}
+              </option>
             ))}
           </select>
         </span>

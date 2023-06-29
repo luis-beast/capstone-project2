@@ -39,51 +39,50 @@ const Register = () => {
 
   return (
     <form
+      className="form-portion"
       onSubmit={(e) => {
         e.preventDefault();
         handleRegister(details);
       }}
     >
-      <div className="form-inner">
-        <h2>Sign Up</h2>
-        <div className="form-group">
-          <label htmlFor="name">First Name:</label>
-          <input
-            className="firstName-input"
-            type="text"
-            name="firstName"
-            id="firstName"
-            onChange={(e) =>
-              setDetails({ ...details, first_name: e.target.value })
-            }
-            value={details.first_name}
-          />
-          <label htmlFor="name">Last Name:</label>
-          <input
-            className="lastName-input"
-            type="text"
-            name="lastName"
-            id="lastName"
-            onChange={(e) =>
-              setDetails({ ...details, last_name: e.target.value })
-            }
-            value={details.last_name}
-          />
-          <label htmlFor="name">Email:</label>
-          <input
-            className="email-input"
-            type="email"
-            name="email"
-            id="email"
-            onChange={(e) => setDetails({ ...details, email: e.target.value })}
-            value={details.email}
-          />
-        </div>
-        <input type="submit" value="SIGN UP" />
-        <p>
-          Already have an account? <Link to="/login">Click here!</Link>
-        </p>
-      </div>
+      <h2 className="form-title">Sign Up</h2>
+      <label className="form-input-label" htmlFor="name">
+        First Name:
+      </label>
+      <input
+        type="text"
+        name="firstName"
+        placeholder="Enter your first name..."
+        id="firstName"
+        onChange={(e) => setDetails({ ...details, first_name: e.target.value })}
+        value={details.first_name}
+      />
+      <label className="form-input-label" htmlFor="name">
+        Last Name:
+      </label>
+      <input
+        type="text"
+        name="lastName"
+        placeholder="Enter your last name..."
+        id="lastName"
+        onChange={(e) => setDetails({ ...details, last_name: e.target.value })}
+        value={details.last_name}
+      />
+      <label className="form-input-label" htmlFor="name">
+        Email:
+      </label>
+      <input
+        type="email"
+        name="email"
+        placeholder="Enter your email..."
+        id="email"
+        onChange={(e) => setDetails({ ...details, email: e.target.value })}
+        value={details.email}
+      />
+      <button type="submit">SIGN UP</button>
+      <p className="form-footer">
+        Already have an account? <Link to="/login">Click here!</Link>
+      </p>
     </form>
   );
 };

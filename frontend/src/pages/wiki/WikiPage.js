@@ -125,6 +125,30 @@ const WikiPage = () => {
 
   return (
     <div className="wiki-page">
+      <div className="button-container">
+        <div className="mutate-buttons">
+          {userData.id && (
+            <Link to={`/page/${id}/edit`}>
+              <button className="edit-button">Edit</button>
+            </Link>
+          )}
+          {userData.is_admin && (
+            <button className="danger" onClick={() => deletePage(page.id)}>
+              Delete
+            </button>
+          )}
+        </div>
+        <div className="meta-info-buttons">
+          <Link to={`/page/${id}/history`}>
+            <button>View History</button>
+          </Link>
+          {!!page.forum_ids?.length && (
+            <Link to={`/forum/${page.forum_ids[0]}`}>
+              <button>Discuss</button>
+            </Link>
+          )}
+        </div>
+      </div>
       {page.id ? (
         <>
           {innovation && (
@@ -150,29 +174,14 @@ const WikiPage = () => {
                 text={<PastVersionMessage />}
               />
               {userData.is_admin && (
-                <button onClick={handleRevert}>Revert to this version</button>
+                <button className="danger revert" onClick={handleRevert}>
+                  Revert to this version
+                </button>
               )}
             </>
           )}
+
           <h1>{page.title}</h1>
-          <div className="button-container">
-            {userData.id && (
-              <Link to={`/page/${id}/edit`}>
-                <button className="edit-button">Edit</button>
-              </Link>
-            )}
-            {userData.is_admin && (
-              <button onClick={() => deletePage(page.id)}>Delete</button>
-            )}
-            <Link to={`/page/${id}/history`}>
-              <button>View History</button>
-            </Link>
-            {!!page.forum_ids?.length && (
-              <Link to={`/forum/${page.forum_ids[0]}`}>
-                <button>Discuss</button>
-              </Link>
-            )}
-          </div>
           <div className="wiki-page-text">
             <article>{parse(page.body)}</article>
           </div>

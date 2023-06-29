@@ -676,10 +676,11 @@ server.post("/register", (req, res) => {
 // Retrieves all tags
 server.get("/tags", (req, res) => {
   knex("tags")
+    .orderBy("name")
     .then((data) => res.status(200).json(data))
     .catch((err) => {
       console.error(err);
-      res.status(404).json({ Error: `There was an error retrieving tags` });
+      res.status(500).json({ Error: `There was an error retrieving tags` });
     });
 });
 

@@ -39,17 +39,21 @@ const TagList = () => {
         value={searchInput}
       />
 
-      {tags
-        .filter((tag) =>
-          tag.name.toLowerCase().includes(searchInput.toLowerCase())
-        )
-        .map((tag, index) => (
-          <div className="tag-names" key={index}>
-            <Link to={`/search`} state={{ initialSearch: `tag:${tag.name}` }}>
+      <div className="tag-names-list">
+        {tags
+          .filter((tag) =>
+            tag.name.toLowerCase().includes(searchInput.toLowerCase())
+          )
+          .map((tag, index) => (
+            <Link
+              to={`/search`}
+              key={index}
+              state={{ initialSearch: `tag:${tag.name}` }}
+            >
               {tag.name}
             </Link>
-          </div>
-        ))}
+          ))}
+      </div>
     </>
   );
 };

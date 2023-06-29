@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { Navbar } from "../../components";
 import moment from "moment";
 import "./forumList.css";
+import { BiSearch } from "react-icons/bi";
 
 const ForumList = () => {
   const { state } = useLocation();
@@ -70,7 +71,7 @@ const ForumList = () => {
   return (
     <div className="thread-containerr">
       <div className="search-bar">
-        <p>Search forums by title</p>
+        <h1>Search forums by title</h1>
         <span>
           <input
             type="text"
@@ -79,7 +80,7 @@ const ForumList = () => {
             placeholder="Search"
           />
           <button className="search" onClick={searchForTerm}>
-            Search{" "}
+            <BiSearch /> Search{" "}
           </button>
         </span>
       </div>
@@ -106,7 +107,7 @@ const ForumList = () => {
                   onClick={() => handleClick(line.id)}
                   key={index}
                 >
-                  <h1>{line.name.toLowerCase()}</h1>
+                  <h1>{line.name}</h1>
                   <p>
                     Last updated @{" "}
                     {moment.utc(line.updated_at).format("DD MMM YYYY hh:mm:ss")}
