@@ -66,17 +66,17 @@ a {
   transform: scale(1.05);
 }
 
-.login,
-.login a {
+.login-link,
+.login-lin a {
   color: white;
 }
 
-.register,
-.register a {
+.register-link,
+.register-link a {
   color: white;
 }
 
-.history,
-.history a {
+.history-link,
+.history-link a {
   color: white;
 }

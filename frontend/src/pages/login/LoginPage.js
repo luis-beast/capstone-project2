@@ -11,8 +11,8 @@ const LoginPage = () => {
   const [userData, setUserData] = useContext(UserContext);
 
   // fetch to our api at /login
+  //TODO - can we add different error codes for different errors here?
   const handleLogin = async (details) => {
-    console.log(details);
     try {
       const response = await fetch("http://localhost:8080/login", {
         method: "POST",
@@ -24,26 +24,20 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (data[0]) {
-        console.log("Login Successful!");
         setUserData(data[0]);
         navigate("/");
       } else {
-        console.log("Login Failed.");
+        throw new Error(`Could not log in: ${data.message}`);
       }
-      console.log(data);
-      navigate("/");
     } catch (error) {
+      alert(error);
       console.error(error);
     }
   };
 
   return (
-    <div className="Wrapper">
-      <div className="Content">
-        <div className="Login">
-          <LoginForm handleLogin={handleLogin} />
-        </div>
-      </div>
+    <div className="Login">
+      <LoginForm handleLogin={handleLogin} />
     </div>
   );
 };

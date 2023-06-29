@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import UserContext from "../../userContext";
+import moment from "moment";
 
 const UserEdits = () => {
   const { id } = useParams();
@@ -18,14 +19,21 @@ const UserEdits = () => {
     fetch(`http://localhost:8080/users/${id}/history`)
       .then((res) => res.json())
       .then((data) => {
-        setUserHistory(data);
+        setUserHistory(
+          data.map((row) => ({
+            ...row,
+            grid_date: moment
+              .utc(row.created_at)
+              .format("DD MMM YYYY hh:mm:ss"),
+          }))
+        );
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
   }, [id]);
 
   const dataGridColums = [
-    { field: "created_at", headerName: "Timestamp", flex: 1 },
+    { field: "grid_date", headerName: "Timestamp", flex: 1 },
     { field: "title", headerName: "WikiPage", flex: 1 },
     { field: "comment", headerName: "Comment", flex: 1 },
   ];
@@ -72,7 +80,6 @@ const UserEdits = () => {
         end_timestamp: timestamps.end,
       }),
     };
-    console.log(init.body);
     fetch(`http://localhost:8080/users/${userHistory[0].user_id}/revert`, init)
       .then((res) => {
         if (res.ok) {
@@ -83,7 +90,6 @@ const UserEdits = () => {
       })
       .then((data) => {
         setRollbackMode(false);
-        console.log(data.message);
         window.location.reload(false);
       })
       .catch((err) => {

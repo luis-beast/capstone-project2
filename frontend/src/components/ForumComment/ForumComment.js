@@ -4,6 +4,7 @@ import "./ForumComment.css";
 import UserContext from "../../userContext";
 import ReactQuill from "react-quill";
 import parse from "html-react-parser";
+import moment from "moment";
 
 const ForumComment = ({ comment, offset, shown, setShown }) => {
   const [editorValue, setEditorValue] = useState("");
@@ -14,27 +15,37 @@ const ForumComment = ({ comment, offset, shown, setShown }) => {
   };
 
   const replyToComment = (commentId) => {
-    const init = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        body: editorValue,
-        replies_to: commentId,
-        user_id: userData.id,
-      }),
-    };
-    fetch(`http://localhost:8080/forum/${comment.forum_id}/comments`, init)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Successfully responded to comment: ", data);
-      })
-      .finally(() => {
-        setEditorValue("");
-        setShown(-1);
-        window.location.reload(false);
-      });
+    if (editorValue && editorValue !== "<p></p>") {
+      const init = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          body: editorValue,
+          replies_to: commentId,
+          user_id: userData.id,
+        }),
+      };
+      fetch(`http://localhost:8080/forum/${comment.forum_id}/comments`, init)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(
+              `${res.status} error, could not respond to comment`
+            );
+          } else {
+            return res.json();
+          }
+        })
+        .then((data) => {
+          setEditorValue("");
+          setShown(-1);
+          window.location.reload(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const handleDelete = (e) => {
@@ -102,7 +113,8 @@ const ForumComment = ({ comment, offset, shown, setShown }) => {
             <h5>{comment.email}</h5>
             {comment.is_admin && <h5 className="admin-label">ADMIN</h5>}
           </div>
-          <p>{parse(comment.body)}</p>
+          {parse(comment.body)}
+          <p>{moment.utc(comment.created_at).format("DD MMM YYYY hh:mm:ss")}</p>
         </div>
         {userData.id && (
           <button

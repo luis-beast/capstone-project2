@@ -13,8 +13,11 @@ const TagEditor = ({ currentTags, setCurrentTags, loading }) => {
   }, []);
 
   const addTags = () => {
-    if (newTag.trim() && !currentTags.includes(newTag)) {
-      setCurrentTags([...currentTags, ...newTag.trim().split(" ")]);
+    if (newTag.trim() && !currentTags.includes(newTag.toLowerCase())) {
+      setCurrentTags([
+        ...currentTags,
+        ...newTag.trim().toLowerCase().split(" "),
+      ]);
       setNewTag("");
     }
   };
@@ -50,7 +53,11 @@ const TagEditor = ({ currentTags, setCurrentTags, loading }) => {
             return <option key={dbTag.id} value={dbTag.name} />;
           })}
       </datalist>
-      <button onClick={addTags} disabled={!newTag?.trim() || loading}>
+      <button
+        className="add-tag"
+        onClick={addTags}
+        disabled={!newTag?.trim() || loading}
+      >
         Add Tag
       </button>
     </div>

@@ -1,6 +1,13 @@
 .inn-box {
-  color: white
+  color: white;
 }
+
+.wiki-page-text {
+  text-align: left;
+  width: 95%;
+  padding-left: 1rem;
+}
+
 .tag-container {
   margin: 20px;
   display: flex;
@@ -14,10 +21,9 @@
 
 .page-links {
   color: #256eff;
-  
   }
 
-.button-container {
+.wiki-page .button-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -36,11 +42,12 @@
 
 .message-box {
   border: 1px solid gray;
-  width: 80%;
+  width: 60%;
   margin-left: auto;
   margin-right: auto;
   padding-left: 5%;
   padding-right: 5%;
+  border-radius: 20px;
 }
 
 .error-message {
@@ -49,6 +56,12 @@
 }
 
 .innovation-message {
-  background-color: yellow;
+  background-color: gold;
   color: darkslategray;
 }
+
+.past-version-message {
+  background-color: darkgray;
+  color: darkslateblue
+}
+

@@ -81,14 +81,12 @@ const AddWiki = () => {
     };
     fetch("http://localhost:8080/pages", init)
       .then((res) => {
-        console.log("response status: ", res.status);
         if (!res.ok) {
           throw new Error("HTTP status: ", res.satus);
         }
         return res.json();
       })
       .then((data) => {
-        console.log("Success:", data);
         navigate(`/page/${data[0]}`);
       })
       .catch((err) => {
@@ -97,38 +95,44 @@ const AddWiki = () => {
   };
 
   return (
-    <div className="Wrapper">
-      <div className="Content">
-        <div className="wiki-container">
-          <div className="wiki-header">
-            <h1 className="wiki-header">Create Wiki Page</h1>
-          </div>
-          <div className="wiki-title-cointainer">
-            {errors.title && <div className="error">{errors.title}</div>}
-            <input
-              className="wiki-input-title"
-              type="text"
-              name="title"
-              placeholder="Enter a title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
-          <ReactQuill
-            className="wiki-input-container"
-            value={body}
-            onChange={(value) => {
-              setBody(value);
-            }}
-            modules={modules}
-            formats={formats}
-            placeholder="Text Body"
-            theme="snow"
+    <div className="Content">
+      <div className="wiki-container">
+        <div className="wiki-header">
+          <h1 className="wiki-header">Create Wiki Page</h1>
+        </div>
+        <div className="wiki-title-cointainer">
+          {errors.title && <div className="error">{errors.title}</div>}
+          <input
+            className="wiki-input-title"
+            type="text"
+            name="title"
+            placeholder="Enter a title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
-          <TagEditor currentTags={tags} setCurrentTags={setTags} />
-          <div className="wiki-buttons-container">
-            <button onClick={saveToDb}>Submit</button>
-          </div>
+        </div>
+        <ReactQuill
+          className="wiki-input-container"
+          value={body}
+          onChange={(value) => {
+            setBody(value);
+          }}
+          modules={modules}
+          formats={formats}
+          placeholder="Text Body"
+          theme="snow"
+        />
+        <TagEditor currentTags={tags} setCurrentTags={setTags} />
+        <div className="wiki-buttons-container">
+          <button
+            onClick={() => {
+              navigate(`/`);
+            }}
+            className="danger"
+          >
+            Cancel
+          </button>
+          <button onClick={saveToDb}>Submit</button>
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@ server.use(cors());
 const activePageLocks = []; //If this app is ever deployed, this needs to be replaced with an ES6 set for faster queries.
 const millisecondsToEditPage = 3600000;
 const adminRemovePageLock = (pageId) => {
-  let indexToRemove = activePageLocks.findIndex((lock) => lock.id === page.id);
+  let indexToRemove = activePageLocks.findIndex((lock) => lock.id === pageId);
   if (indexToRemove >= 0) {
     activePageLocks.splice(indexToRemove, 1);
   }
@@ -281,7 +281,7 @@ server.get("/pages/:id", (req, res) => {
 
 // Updates page
 server.put("/pages/:id", (req, res) => {
-  let { id, title, body, userId, comment, tags, lock } = req.body; //Note: tags is an array of strings
+  let { id, title, body, user_id, comment, tags, lock } = req.body; //Note: tags is an array of strings
   let found = activePageLocks.find(
     (pageLock) =>
       lock.token === pageLock.token &&
@@ -298,7 +298,7 @@ server.put("/pages/:id", (req, res) => {
 
         let editHistoryTransactionPromise = trx("edit_history").insert({
           page_id: id,
-          user_id: userId,
+          user_id: user_id,
           body: body,
           comment: comment,
         });

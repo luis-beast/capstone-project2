@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./navbar.css";
 import UserContext from "../../userContext";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [userData, setUserData] = useContext(UserContext);
   const handleLogout = () => {
     setUserData({});
@@ -24,27 +25,28 @@ const Navbar = () => {
           className="NavbarLogo"
           src="/image.png"
           alt="WikiForces"
-          onClick={() => (window.location.href = "/")}
+          onClick={() => navigate("/")}
         />
+
         <Link to="/tags" onClick={() => refreshIfHere("/tags")}>
           Tags
         </Link>
         <Link
           to="/search"
           onClick={() => refreshIfHere("/search")}
-          state={{ initialSearch: "tag:Innovation" }}
+          state={{ initialSearch: "tag:innovation" }}
         >
           Innovations
         </Link>
         <Link to="/forum" onClick={() => refreshIfHere("/forum")}>
-          Forum
+          Forums
         </Link>
       </div>
       <div className="navbar-auth">
         {userData.id ? (
           <>
             <Link
-              className="history"
+              className="history-link"
               onClick={() => refreshIfHere(`/user/${userData.id}/history`)}
               to={`/user/${userData.id}/history`}
             >
@@ -55,14 +57,14 @@ const Navbar = () => {
         ) : (
           <>
             <Link
-              className="login"
+              className="login-link"
               onClick={() => refreshIfHere("/login")}
               to="/login"
             >
               Sign In
             </Link>
             <Link
-              className="register"
+              className="register-link"
               onClick={() => refreshIfHere("/register")}
               to="/register"
             >

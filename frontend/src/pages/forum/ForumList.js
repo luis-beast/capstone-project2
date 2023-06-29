@@ -37,7 +37,6 @@ const ForumList = () => {
     fetch(`http://localhost:8080/forum/${id}/comments`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("forumId", data);
         setForumId(data);
       });
   };
@@ -58,7 +57,6 @@ const ForumList = () => {
     let resultsArray = [];
     for (let i = 0; i < forum.length; ++i) {
       if (forum[i].name.toLowerCase().includes(term.toLowerCase())) {
-        console.log("found a result!", forum[i].name);
         resultsArray.push(forum[i]);
       }
     }
@@ -80,7 +78,7 @@ const ForumList = () => {
             placeholder="Search"
           />
           <button className="search" onClick={searchForTerm}>
-            <BiSearch /> Search{" "}
+            <BiSearch style={{ position: "relative", top: "3px" }} /> Search{" "}
           </button>
         </span>
       </div>
@@ -93,10 +91,10 @@ const ForumList = () => {
                 key={index}
               >
                 <h1>{res.name}</h1>
-                <p>
+                {/* <p>
                   Last updated @{" "}
                   {moment.utc(res.updated_at).format("DD MMM YYYY hh:mm:ss")}
-                </p>
+                </p> */}
               </div>
             ))
           : forum.length > 0 &&
@@ -108,10 +106,10 @@ const ForumList = () => {
                   key={index}
                 >
                   <h1>{line.name}</h1>
-                  <p>
+                  {/* <p>
                     Last updated @{" "}
                     {moment.utc(line.updated_at).format("DD MMM YYYY hh:mm:ss")}
-                  </p>
+                  </p> */}
                 </div>
               );
             })}

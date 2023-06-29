@@ -7,8 +7,6 @@ import useLocalStorageState from "../../useLocalStorageState.js";
 import UserContext from "../../userContext";
 import { TagEditor } from "../../components";
 
-//TODO - See if you can add external images to articles using Quill.
-
 const EditWiki = () => {
   const millisecondsToEditPage = 3600000;
   const [userData, setUserData] = useContext(UserContext);
@@ -149,6 +147,7 @@ const EditWiki = () => {
       id: page.id,
       title: page.title,
       body: newBody,
+      user_id: userData.id,
       comment: comment,
       tags: tags,
       lock: pageLock,
@@ -161,7 +160,6 @@ const EditWiki = () => {
       body: JSON.stringify(newArticle),
     };
     fetch(`http://localhost:8080/pages/${id}`, init)
-      //Check for 404 erros
       .then((res) => {
         if (res.status == 201) {
           navigate(`/page/${page.id}`, { replace: true });
@@ -187,7 +185,7 @@ const EditWiki = () => {
       ) : (
         <>
           <h1>{page.title}</h1>
-          <button className="delete cancel-edit" onClick={handleCancel}>
+          <button className="danger cancel-edit" onClick={handleCancel}>
             Cancel Edits
           </button>
           <div className="wiki-input-container">
@@ -216,17 +214,17 @@ const EditWiki = () => {
               onChange={safeSetComment}
               placeholder="Add a Comment Here"
             />
+            <p>
+              {comment
+                ? `${comment.length}/255 characters`
+                : "Comment Required"}
+            </p>
             <button
               onClick={saveChanges}
               disabled={!comment?.trim() || loading}
             >
               Save Changes
             </button>
-            <p>
-              {comment
-                ? `${comment.length}/255 characters`
-                : "Comment Required"}
-            </p>
           </div>
         </>
       )}

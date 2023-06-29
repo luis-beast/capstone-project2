@@ -34,7 +34,7 @@ const TagList = () => {
       <h1>Search tags by name</h1>
       <input
         type="search"
-        placeholder="Search Tags..."
+        placeholder="Search"
         onChange={handleChange}
         value={searchInput}
       />

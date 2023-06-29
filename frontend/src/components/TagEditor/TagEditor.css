@@ -4,3 +4,9 @@
   width: 25px;
   padding: 4px;
 }
+.editor-tag-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+}

@@ -10,7 +10,6 @@ const Home = () => {
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState("");
   const [userData, setUserData] = useContext(UserContext);
-  console.log(userData);
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -29,9 +28,13 @@ const Home = () => {
   return (
     <div className="home">
       <h1>
-        <span>Wiki</span>
-        <span>Forces</span>
+        <span>WikiForces</span>
       </h1>
+      {userData.id ? (
+        <>
+          <h3>{`Welcome, ${userData.first_name}`}</h3>
+        </>
+      ) : null}
       <img src="/image.png" alt="eagle" />
       <form className="search-bar" onSubmit={handleSubmit}>
         <input
@@ -41,22 +44,24 @@ const Home = () => {
           value={searchInput}
         />
         <button type="submit" className="search-icon">
-          <BiSearch /> Search
+          <BiSearch style={{ position: "relative", top: "3px" }} /> Search
         </button>
       </form>
       <div className="footer-container">
         <div className="footer-links">
-          <Link to="/add-wiki">Add WikiPage</Link>
           <Link to="/tags">Tags</Link>
+          <Link to="/search" state={{ initialSearch: "tag:innovation" }}>
+            Innovation
+          </Link>
           <Link to="/forum">Forums</Link>
         </div>
         <div className="footer-auth">
           {userData.id ? (
             <>
+              {/* <div>{`Welcome, ${userData.first_name}!`}</div> */}
               <Link className="history" to={`/user/${userData.id}/history`}>
                 History
               </Link>
-              <div>{`Welcome, ${userData.first_name}!`}</div>
               {<h3 onClick={handleLogout}>Sign Out</h3>}
             </>
           ) : (

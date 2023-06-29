@@ -7,7 +7,7 @@ const Footer = () => {
     <div className="FooterContainer">
       <div className="FooterLinks">
         <Link to="/tags">Tags</Link>
-        <Link to="/search" state={{ initialSearch: "tag:Innovation" }}>
+        <Link to="/search" state={{ initialSearch: "tag:innovation" }}>
           Innovations
         </Link>
         <Link to="/forum">Forum</Link>

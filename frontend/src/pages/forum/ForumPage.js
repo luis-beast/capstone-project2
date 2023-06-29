@@ -5,13 +5,11 @@ import "./forumPage.css";
 import ForumComment from "../../components/ForumComment/ForumComment";
 import UserContext from "../../userContext";
 import ReactQuill from "react-quill";
+import moment from "moment";
 
 const ForumPage = () => {
   const [forumComment, setForumComment] = useState([]);
   const { id } = useParams();
-  const [userInput, setUserInput] = useState({
-    body: "",
-  });
   const [showEditor, setShowEditor] = useState(false);
   const [editorValue, setEditorValue] = useState("");
   const [forumName, setForumName] = useState("");
@@ -63,17 +61,11 @@ const ForumPage = () => {
     fetch(`http://localhost:8080/forum/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("forum: ", data);
         setForumName(data[0].name);
       });
   };
 
   const handleChange = (e) => {
-    setUserInput({ ...userInput, [e.target.name]: e.target.value });
-    // setUserInput({...userInput.replies_to, [e.target.]})
-  };
-
-  const handleReplyChange = (e, commentId) => {
     setEditorValue(e.target.value);
   };
 
@@ -81,7 +73,7 @@ const ForumPage = () => {
     let errors = {};
     let formIsValid = true;
 
-    if (!userInput.body) {
+    if (!editorValue || editorValue === "<p></p>") {
       formIsValid = false;
       errors["body"] = "Comment cannot be empty";
     }
@@ -94,21 +86,22 @@ const ForumPage = () => {
     if (!handleValidation()) {
       return;
     }
-    console.log("errors: ", errors.body);
 
-    console.log("Id from saveToDb: ", id);
     const init = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(userInput),
+      body: JSON.stringify({
+        user_id: userData.id,
+        body: editorValue,
+        replies_to: null,
+      }),
     };
     fetch(`http://localhost:8080/forum/${id}/comments`, init)
       .then((res) => res.json())
       .then((data) => {
-        console.log("Data successfully posted: ", data);
-        setUserInput("");
+        setEditorValue("");
         window.location.reload(false);
       })
       .catch((err) => console.log(err));
@@ -118,7 +111,6 @@ const ForumPage = () => {
     fetch(`http://localhost:8080/forum/${id}/comments`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("forum comments: ", data);
         const condensedData = data
           .filter((comment) => {
             return !comment.replies_to;
@@ -146,55 +138,58 @@ const ForumPage = () => {
   }, [id]);
 
   return (
-    <div className="Wrapper">
-      <div className="forum-page">
-        <h1>{forumName}</h1>
-        {userData.id && (
-          <div className="top-level-reply">
-            <button
-              className={`${showEditor ? "danger" : ""}`}
-              onClick={() => setShowEditor(!showEditor)}
-            >
-              {showEditor ? "Cancel Comment" : "Add Comment"}
-            </button>
-            {showEditor && (
-              <div className="comment-editor">
-                <ReactQuill
-                  value={editorValue}
-                  onChange={(value) => {
-                    setEditorValue(value);
-                  }}
-                  modules={modules}
-                  formats={formats}
-                  placeholder="Text Body"
-                  theme="snow"
-                />
-                <button onClick={() => saveToDb(id)}>Post Comment</button>
-              </div>
-            )}
-          </div>
-        )}
-        <div className="threads-container">
-          {!!forumComment?.length &&
-            forumComment
-              .filter((comment) => !comment.replies_to)
-              .map((comment, index) => {
-                return (
-                  comment && (
-                    <div key={index} className="top-level-comment-box">
-                      <ForumComment
-                        comment={comment}
-                        offset={0}
-                        shown={shown}
-                        setShown={setShown}
-                      />
-                    </div>
-                  )
-                );
-              })}
-          <hr />
-          {errors.body && <div className="error">{errors.body}</div>}
+    <div className="forum-page">
+      <h1>{forumName}</h1>
+      {userData.id && (
+        <div className="top-level-reply">
+          <button
+            className={`${showEditor ? "danger" : ""}`}
+            onClick={() => setShowEditor(!showEditor)}
+          >
+            {showEditor ? "Cancel Comment" : "Add Comment"}
+          </button>
+          {showEditor && (
+            <div className="comment-editor">
+              <ReactQuill
+                value={editorValue}
+                onChange={(value) => {
+                  setEditorValue(value);
+                }}
+                modules={modules}
+                formats={formats}
+                placeholder="Text Body"
+                theme="snow"
+              />
+              <button
+                disabled={!editorValue || editorValue === "<p></p>"}
+                onClick={() => saveToDb(id)}
+              >
+                Post Comment
+              </button>
+            </div>
+          )}
         </div>
+      )}
+      <div className="threads-container">
+        {!!forumComment?.length &&
+          forumComment
+            .filter((comment) => !comment.replies_to)
+            .map((comment, index) => {
+              return (
+                comment && (
+                  <div key={index} className="top-level-comment-box">
+                    <ForumComment
+                      comment={comment}
+                      offset={0}
+                      shown={shown}
+                      setShown={setShown}
+                    />
+                  </div>
+                )
+              );
+            })}
+        <hr />
+        {errors.body && <div className="error">{errors.body}</div>}
       </div>
     </div>
   );

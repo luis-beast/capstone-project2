@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import "./EditHistory.css";
+import moment from "moment";
 
 const EditHistory = () => {
   const { id } = useParams();
@@ -9,6 +10,7 @@ const EditHistory = () => {
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(state?.page ? state.page : {});
+  const [title, setTitle] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,28 +22,47 @@ const EditHistory = () => {
         .catch((err) => console.log(err));
     }
     fetch(`http://localhost:8080/pages/${id}/history`)
-      .then((res) => res.json())
-      .then((data) => setHistory(data))
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error(`${res.status} Error`);
+        }
+      })
+      .then((data) =>
+        setHistory(
+          data.map((row) => ({
+            ...row,
+            grid_date: moment
+              .utc(row.created_at)
+              .format("DD MMM YYYY hh:mm:ss"),
+          }))
+        )
+      )
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
   }, [id]);
 
   const dataGridColums = [
-    { field: "created_at", headerName: "Timestamp", flex: 1 },
+    { field: "grid_date", headerName: "Timestamp", flex: 1 },
     { field: "email", headerName: "User", flex: 1 },
     { field: "comment", headerName: "Comment", flex: 1 },
   ];
 
   const handleRowClick = (params) => {
-    let title = `${params.row.created_at}::${currentPage.title}`;
+    let momentTime = moment
+      .utc(params.row.created_at)
+      .format("DD MMM YYYY hh:mm:ss");
+    let title = `${momentTime} :: ${currentPage.title}`;
     let body = params.row.body;
+    let email = params.row.email;
     navigate(`/page/${id}/history/${params.row.id}`, {
       state: {
         page: {
           ...currentPage,
           title: title,
           body: body,
-          email: params.row.email,
+          email: email,
         },
       },
     });

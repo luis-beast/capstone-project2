@@ -3,6 +3,7 @@ import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import UserContext from "../../userContext.js";
 import "./wiki.css";
 import parse from "html-react-parser";
+import moment from "moment";
 
 const WikiPage = () => {
   const { id, edit_id } = useParams(); //If edit_id is defined, we are viewing a past version of the page.
@@ -30,12 +31,15 @@ const WikiPage = () => {
           }
         })
         .then((data) => {
-          let title = `${data[0]?.created_at}::${data[0]?.title}`;
+          let momentTime = moment
+            .utc(data[0]?.created_at)
+            .format("DD MMM YYYY hh:mm:ss");
+          let title = `${momentTime} :: ${data[0]?.title}`;
           setPage({ ...data[0], title: title });
           checkInnovation(data[0]);
         })
         .catch((err) => console.log(err))
-        .finally(() => setLoading(false));
+        .finally(() => setLoading(false)); // that did not work
     } else {
       fetch(`http://localhost:8080/pages/${id}`)
         .then((res) => res.json())
@@ -56,7 +60,7 @@ const WikiPage = () => {
     return (
       <p>
         You are viewing a past version of this article.
-        <Link to={`/page/${page.page_id}`}>View current version</Link>
+        <Link to={`/page/${page.page_id}`}> View current version</Link>
       </p>
     );
   };
@@ -71,7 +75,7 @@ const WikiPage = () => {
   };
 
   const checkInnovation = (page) => {
-    if (page.tags?.find((tag) => tag.name === "Innovation")) {
+    if (page.tags?.find((tag) => tag.name === "innovation")) {
       setInnovation(true);
     }
   };
@@ -186,14 +190,14 @@ const WikiPage = () => {
             <article>{parse(page.body)}</article>
           </div>
           {edit_id && page.email && (
-            <div>
+            <h3>
               Edit by{" "}
               {userData.is_admin || userData.id === page.user_id ? (
                 <Link to={`/user/${page.user_id}/history`}>{page.email}</Link>
               ) : (
                 page.email
               )}
-            </div>
+            </h3>
           )}
         </>
       ) : (

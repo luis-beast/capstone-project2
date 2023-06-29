@@ -1,4 +1,6 @@
 .tag-names-list {
+  padding-top: 10px;
+  padding-bottom: 10px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -7,6 +9,8 @@
   justify-content: center;
   margin-top: 20px;
   width: 80%;
+  background-color: gray;
+  border-radius: 5px;
 }
 
 .tag-names-list  * {
@@ -15,5 +19,9 @@
   margin-right: 5%;
   margin-top: 5px;
   margin-bottom: 5px;
+  color: white;
+}
 
+.tag-names-list  a:hover {
+  transform: scale(1.05);
 }

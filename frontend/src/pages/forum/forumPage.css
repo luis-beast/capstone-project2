@@ -1,10 +1,10 @@
 .error {
     color: #800020;
 }
-
+/* 
 .threads-container {
-    background-color: gray
-}
+    background-color: darkslategray;
+} */
 
 .top-level-comment-box {
     border-top: 1px solid black;

@@ -155,12 +155,16 @@ const SearchWiki = () => {
             placeholder="Search"
           />
           <button type="submit" className="search-button">
-            <BiSearch /> Search{" "}
+            <BiSearch style={{ position: "relative", top: "3px" }} /> Search{" "}
           </button>
         </form>
         <span>
           Sort By:
-          <select onChange={handleSort} value={sortBy}>
+          <select
+            className="search-wiki-select"
+            onChange={handleSort}
+            value={sortBy}
+          >
             {possibleSorts.map((sort, index) => (
               <option className="dropdown" key={index}>
                 {sort}

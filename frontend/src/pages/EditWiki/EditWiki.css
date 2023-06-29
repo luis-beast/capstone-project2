@@ -1,7 +1,8 @@
-.edit-box {
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+.edit-wiki{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
 }
 
 .delete-tags {
@@ -12,4 +13,10 @@
 
 button {
   margin: 2px;
+}
+
+.edit-wiki .button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

@@ -31,3 +31,20 @@
     margin-left: 10px;
     margin-right: 10px;
 }
+
+.search-wiki-select {
+    border-radius: 8px;
+    
+    margin:10px;
+    padding: 4px;
+    background-color: darkorange;
+    color: whitesmoke;
+}
+
+.search-wiki-select option {
+    font-weight: 100;
+}
+
+.search-wiki-select option:hover {
+    background-color: blue;
+}
