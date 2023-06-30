@@ -177,7 +177,7 @@ const WikiPage = () => {
                 header="Past version of Project"
                 text={<PastVersionMessage />}
               />
-              {userData.is_admin && (
+              {userData.id && (
                 <button className="danger revert" onClick={handleRevert}>
                   Revert to this version
                 </button>
