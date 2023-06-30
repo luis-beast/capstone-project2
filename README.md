@@ -33,7 +33,7 @@ We wish to solve this by creating a Wiki for service members to create and updat
 - install dependencies
     - run `npm i`  
 - start the api server
-    - `npm start`
+    - `npm start-dev`
 - open url in browser
     - `http://localhost:8080`
 
